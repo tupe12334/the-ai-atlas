@@ -1,6 +1,6 @@
 # The AI Atlas
 
-A catalog of AI development stacks. Filter by runtime (on-prem or cloud), agent, scheduler and models. For example: on-prem + Hermes + Moadim, or cloud + Claude Code + Claude routines.
+A catalog of AI development stacks. Filter by runtime (on-prem or cloud), agent, workflow tool, scheduler and models. For example: on-prem + Hermes + Moadim, cloud + Claude Code + Claude routines, or n8n with its AI Agent node.
 
 ## Add a stack
 

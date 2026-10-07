@@ -3,5 +3,6 @@ summary: Run Claude Code from GitHub workflows, on events or on a cron schedule.
 url: https://github.com/anthropics/claude-code-action
 runtime: [cloud]
 agent: [Claude Code]
+workflow: [GitHub Actions]
 scheduler: [GitHub Actions cron]
 models: [Claude]
