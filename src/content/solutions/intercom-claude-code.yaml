@@ -3,7 +3,7 @@ summary: "Claude Code with internal plugins and skills on developer machines, pl
 company: "Intercom"
 proof: in-production
 url: https://ideas.fin.ai/p/how-we-use-claude-code-today-at-intercom
-runtime: [on-prem, cloud]
+runtime: [on-prem]
 agent: [claude-code]
 workflow: [github-actions]
 scheduler: [github-actions-cron]
