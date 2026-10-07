@@ -555,6 +555,8 @@ const catalog = {
     form.addEventListener("reset", () => setTimeout(() => (say(""), apply())));
     compare.addEventListener("change", renderCompare);
     const starter = document.querySelector<HTMLSelectElement>("#starter")!;
+    // Back to this page restores the old menu choice; clear it so picking it again works.
+    addEventListener("pageshow", () => (starter.value = ""));
     starter.addEventListener("change", () => {
       if (starter.value) location.href = starter.value;
     });

@@ -1,6 +1,0 @@
-name: "Uber Validator and AutoCover"
-summary: "LangGraph agents flag rule violations in the IDE and generate unit tests."
-company: "Uber"
-proof: in-production
-url: https://blog.langchain.dev/is-langgraph-used-in-production
-agent: [langgraph]

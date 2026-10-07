@@ -1,7 +1,0 @@
-name: "Block goose"
-summary: "Block built goose and runs it on employees' own machines. Most of the company uses it every week, engineers and others."
-company: "Block"
-proof: in-production
-url: https://block.xyz/inside/block-open-source-introduces-codename-goose
-runtime: [on-prem]
-agent: [goose]

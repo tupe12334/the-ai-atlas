@@ -3,7 +3,6 @@ summary: "A coordinator and up to seven specialist OpenCode reviewers run on eve
 company: "Cloudflare"
 proof: in-production
 url: https://blog.cloudflare.com/ai-code-review
-runtime: [on-prem]
 agent: [opencode]
 workflow: [gitlab-ci]
 models: [claude, openai, kimi]

@@ -1,5 +1,5 @@
 name: "Google LLM code migrations"
-summary: "Internal LLM pipeline for large migrations, such as JUnit 3 to 4 and 32-bit to 64-bit IDs. The LLM wrote about three quarters of the changes."
+summary: "Internal LLM pipeline for large migrations, such as JUnit 3 to 4 and 32-bit to 64-bit IDs. The LLM wrote most of the code changes, about 80% in the ID migration."
 company: "Google"
 proof: in-production
 url: https://arxiv.org/html/2501.06972v1

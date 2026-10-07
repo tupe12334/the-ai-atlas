@@ -185,8 +185,8 @@ jules:
   url: https://jules.google/docs/
   needs:
     - parts: [cloud]
-      why: Jules runs only in Google-managed cloud VMs.
-      source: https://developers.googleblog.com/en/jules-gemini-3/
+      why: Jules works in a Google-run virtual machine, not on your computer.
+      source: https://jules.google/docs/
     - parts: [gemini]
       why: Jules runs on Google's Gemini models.
       source: https://developers.googleblog.com/en/jules-gemini-3/
@@ -299,10 +299,6 @@ replit-agent:
   name: Replit Agent
   summary: Builds and deploys apps inside Replit's cloud workspace.
   url: https://docs.replit.com/replitai/agent
-  needs:
-    - parts: [cloud]
-      why: Replit Agent runs only in Replit's cloud.
-      source: https://docs.replit.com/replitai/agent
 warp-cloud-agents:
   layer: agent
   name: Warp cloud agents
@@ -536,7 +532,7 @@ copilot-studio:
       why: Copilot Studio is a hosted service with no self-host option.
       source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
     - parts: [openai, claude, grok, mistral]
-      why: Copilot Studio offers a fixed model list. It has no local model endpoint.
+      why: Copilot Studio agents use the models in its own list or models deployed in Microsoft Foundry.
       source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/authoring-select-agent-model
 azure-foundry-agent-service:
   layer: agent

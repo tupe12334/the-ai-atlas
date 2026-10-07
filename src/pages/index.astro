@@ -224,7 +224,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
         <ul id="results">
           {solutions.map((data) => (
-            <li class="stack" data-facets={JSON.stringify({ ...data.stack, proof: [data.proof] })} data-text={`${data.name} ${data.company} ${data.summary}`.toLowerCase()}>
+            <li class="stack" data-facets={JSON.stringify({ ...data.stack, proof: [data.proof] })} data-text={[data.name, data.company, data.summary, ...facetKeys.flatMap((k) => data[k].map((id) => parts[id].name))].join(" ").toLowerCase()}>
               <p class:list={["byline", data.proof]}>{data.proof === "in-production" ? `Runs at ${data.company}` : `Template by ${data.company}`}</p>
               <h2><a href={data.url}>{data.name}</a></h2>
               <p>{data.summary}</p>

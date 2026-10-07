@@ -45,7 +45,6 @@ export function readBuild(params: URLSearchParams, parts: Parts): Build {
   return build;
 }
 
-
 /** Every build a stack lists: one pick per layer, across all the alternatives it names. */
 function variants(stack: Stack): Build[] {
   return Object.entries(stack).reduce<Build[]>(
