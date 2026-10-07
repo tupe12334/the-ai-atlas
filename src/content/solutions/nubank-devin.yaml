@@ -1,0 +1,7 @@
+name: "Nubank ETL migration with Devin"
+summary: "Devin split an eight-year-old ETL monolith into sub-modules. Engineers reviewed and approved the changes."
+company: "Nubank"
+proof: in-production
+url: https://devin.ai/customers/nubank
+runtime: [cloud]
+agent: [devin]

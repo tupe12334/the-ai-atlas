@@ -1,0 +1,8 @@
+name: "Ramp Inspect"
+summary: "Background coding agent on OpenCode. Each session gets a full-stack sandbox on Modal. It starts over half of the merged PRs at Ramp."
+company: "Ramp"
+proof: in-production
+url: https://modal.com/blog/how-ramp-built-a-full-context-background-coding-agent-on-modal
+runtime: [cloud]
+agent: [opencode]
+workflow: [slack]

@@ -1,0 +1,8 @@
+name: "Devin Desktop on your machine"
+summary: "Cognition's agentic IDE, formerly Windsurf, with a choice of frontier models."
+company: "Cognition"
+proof: vendor
+url: https://docs.devin.ai/desktop/models
+runtime: [on-prem]
+agent: [devin-desktop]
+models: [openai, claude, gemini, deepseek, grok, kimi]

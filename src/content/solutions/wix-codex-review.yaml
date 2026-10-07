@@ -1,0 +1,9 @@
+name: "Wix Codex review"
+summary: "GitHub Actions run Codex for line-by-line review on every PR, next to a migration platform that turns standards into PRs."
+company: "Wix"
+proof: in-production
+url: https://wix.engineering/post/from-co-pilot-to-full-automation-how-wix-is-embedding-ai-agents-across-an-engineering-org-at-scale
+runtime: [cloud]
+agent: [codex]
+workflow: [github-actions]
+models: [openai]

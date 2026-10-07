@@ -1,0 +1,8 @@
+name: "CrewAI crews"
+summary: "Python crews of agents with any model through LiteLLM, run yourself or on CrewAI's platform."
+company: "CrewAI"
+proof: vendor
+url: https://docs.crewai.com/en/learn/llm-connections
+runtime: [on-prem, cloud]
+agent: [crewai]
+models: [openai, claude, gemini, local-models]

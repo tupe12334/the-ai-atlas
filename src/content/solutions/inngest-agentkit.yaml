@@ -1,0 +1,10 @@
+name: "Inngest AgentKit"
+summary: "Durable multi-agent networks on Inngest, started by events or cron functions."
+company: "Inngest"
+proof: vendor
+url: https://agentkit.inngest.com/concepts/models
+runtime: [on-prem, cloud]
+agent: [workflow-ai-step]
+workflow: [inngest]
+scheduler: [inngest-cron]
+models: [openai, claude, gemini, grok]

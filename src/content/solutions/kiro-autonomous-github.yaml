@@ -1,0 +1,7 @@
+name: "Kiro autonomous agent on GitHub"
+summary: "Label an issue kiro or comment /kiro. The agent works in AWS and opens a PR."
+company: "Amazon"
+proof: vendor
+url: https://kiro.dev/docs/autonomous-agent/
+runtime: [cloud]
+agent: [kiro-autonomous-agent]

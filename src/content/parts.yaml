@@ -18,15 +18,17 @@ claude-code:
   url: https://code.claude.com/docs
   needs:
     - parts: [claude]
-      why: Claude Code officially supports only Anthropic's Claude models.
+      why: Anthropic does not support routing Claude Code to non-Claude models.
+      source: https://code.claude.com/docs/en/llm-gateway
 codex:
   layer: agent
   name: Codex
   summary: OpenAI's coding agent, as a CLI or in cloud sandboxes.
   url: https://openai.com/codex
   needs:
-    - parts: [openai, any-openai-compatible, local-models]
+    - parts: [openai, any-openai-compatible, local-models, mistral]
       why: Codex runs OpenAI models, other providers set in its config, or local models with its --oss mode.
+      source: https://learn.chatgpt.com/docs/config-file/config-advanced
 hermes:
   layer: agent
   name: Hermes
@@ -144,3 +146,724 @@ local-models:
   layer: models
   name: Local models
   summary: Open-weight models that run on hardware you control.
+
+# ---- Added from vendor research, 2026-10-07. Each rule cites its source. ----
+
+# Agents
+claude-agent-sdk:
+  layer: agent
+  name: Claude Agent SDK
+  summary: Python and TypeScript library that runs the Claude Code agent loop in your own process.
+  url: https://code.claude.com/docs/en/agent-sdk/overview
+  needs:
+    - parts: [claude]
+      why: The Agent SDK runs Claude models only.
+      source: https://code.claude.com/docs/en/agent-sdk/overview
+claude-managed-agents:
+  layer: agent
+  name: Claude Managed Agents
+  summary: Anthropic-hosted agent harness, with the sandbox in Anthropic's cloud or your own.
+  url: https://platform.claude.com/docs/en/managed-agents/overview
+  needs:
+    - parts: [claude]
+      why: Managed Agents run Claude models only.
+      source: https://platform.claude.com/docs/en/managed-agents/overview
+openai-agents-sdk:
+  layer: agent
+  name: OpenAI Agents SDK
+  summary: Python library for multi-agent workflows. Other model providers work through LiteLLM adapters, in beta.
+  url: https://openai.github.io/openai-agents-python/
+gemini-cli:
+  layer: agent
+  name: Gemini CLI
+  summary: Google's open-source terminal agent for Gemini. Also runs in GitHub Actions with run-gemini-cli.
+  url: https://google-gemini.github.io/gemini-cli/
+jules:
+  layer: agent
+  name: Jules
+  summary: Google's async coding agent. It clones your GitHub repo into a cloud VM and opens a pull request.
+  url: https://jules.google/docs/
+  needs:
+    - parts: [cloud]
+      why: Jules runs only in Google-managed cloud VMs.
+      source: https://developers.googleblog.com/en/jules-gemini-3/
+    - parts: [gemini]
+      why: Jules runs on Google's Gemini models.
+      source: https://developers.googleblog.com/en/jules-gemini-3/
+copilot-coding-agent:
+  layer: agent
+  name: Copilot coding agent
+  summary: GitHub's cloud agent. Assign it an issue and it works in a GitHub Actions environment, then opens a pull request.
+  url: https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent
+copilot-cli:
+  layer: agent
+  name: Copilot CLI
+  summary: GitHub Copilot in the terminal. Bring your own key or a local model through Ollama.
+  url: https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli
+cursor-cloud-agents:
+  layer: agent
+  name: Cursor cloud agents
+  summary: Cursor agents that run in Cursor-managed VMs or on your own machines, started from GitHub, Slack, Linear and more.
+  url: https://cursor.com/docs/cloud-agent
+cursor-cli:
+  layer: agent
+  name: Cursor CLI
+  summary: Cursor's agent in the terminal and in CI.
+  url: https://cursor.com/docs/cli/overview
+cursor-bugbot:
+  layer: agent
+  name: Cursor Bugbot
+  summary: Hosted pull request reviewer for GitHub, GitLab, Bitbucket and Azure DevOps.
+  url: https://cursor.com/docs/bugbot
+  needs:
+    - parts: [cloud]
+      why: Bugbot is a hosted Cursor service.
+      source: https://cursor.com/docs/bugbot
+devin:
+  layer: agent
+  name: Devin
+  summary: Cognition's autonomous software engineer, started from Slack, Teams, Linear, Jira or its API.
+  url: https://docs.devin.ai/
+  needs:
+    - parts: [cloud]
+      why: Even inside your VPC, Devin's brain is hosted in Cognition's tenant.
+      source: https://docs.devin.ai/enterprise/vpc/overview
+devin-desktop:
+  layer: agent
+  name: Devin Desktop (formerly Windsurf)
+  summary: Cognition's agentic IDE on your machine.
+  url: https://docs.devin.ai/desktop/models
+  needs:
+    - parts: [on-prem]
+      why: Devin Desktop is an IDE that runs on your machine.
+      source: https://docs.devin.ai/desktop/models
+kiro:
+  layer: agent
+  name: Kiro
+  summary: Amazon's agentic IDE and CLI, the successor of Amazon Q Developer CLI.
+  url: https://kiro.dev/docs/
+kiro-autonomous-agent:
+  layer: agent
+  name: Kiro autonomous agent
+  summary: Amazon's cloud agent, started with a kiro label or a /kiro comment on GitHub.
+  url: https://kiro.dev/docs/autonomous-agent/
+  needs:
+    - parts: [cloud]
+      why: The Kiro autonomous agent runs in AWS cloud environments.
+      source: https://kiro.dev/docs/autonomous-agent/
+kiro-crew:
+  layer: agent
+  name: Kiro Crew
+  summary: Open-source persistent personal agent with cron, webhooks and chat apps.
+  url: https://kiro.dev/docs/crew/
+  needs:
+    - parts: [on-prem]
+      why: Kiro Crew runs on your machine, in a container or on your remote machine, not in AWS cloud.
+      source: https://kiro.dev/docs/crew/
+amp:
+  layer: agent
+  name: Amp
+  summary: Sourcegraph's coding agent, in the terminal or in cloud threads.
+  url: https://ampcode.com/manual
+aider:
+  layer: agent
+  name: Aider
+  summary: Open-source pair programmer in the terminal for almost any model.
+  url: https://aider.chat/
+  needs:
+    - parts: [on-prem]
+      why: Aider is a CLI that runs on your machine.
+      source: https://aider.chat/
+openhands:
+  layer: agent
+  name: OpenHands
+  summary: Open-source coding agent. Self-host it, use the cloud app, or run it as a GitHub Action.
+  url: https://docs.openhands.dev/
+cline:
+  layer: agent
+  name: Cline
+  summary: Open-source coding agent for VS Code and a headless CLI.
+  url: https://docs.cline.bot/
+goose:
+  layer: agent
+  name: Goose
+  summary: Open-source local agent started at Block, now at the Linux Foundation, with scheduled recipes.
+  url: https://github.com/aaif-goose/goose
+factory-droids:
+  layer: agent
+  name: Factory Droids
+  summary: Factory's coding agents for the terminal, CI, Slack and Linear.
+  url: https://docs.factory.com/
+replit-agent:
+  layer: agent
+  name: Replit Agent
+  summary: Builds and deploys apps inside Replit's cloud workspace.
+  url: https://docs.replit.com/replitai/agent
+  needs:
+    - parts: [cloud]
+      why: Replit Agent runs only in Replit's cloud.
+      source: https://docs.replit.com/replitai/agent
+warp-cloud-agents:
+  layer: agent
+  name: Warp cloud agents
+  summary: Warp's agent platform. Agents run Warp-hosted, self-hosted in Docker, or in your CI, with schedules.
+  url: https://docs.warp.dev/agent-platform/cloud-agents/overview
+mistral-vibe:
+  layer: agent
+  name: Mistral Vibe
+  summary: Mistral's open-source terminal agent, powered by Devstral, for any OpenAI-compatible model.
+  url: https://docs.mistral.ai/mistral-vibe/overview
+grok-build:
+  layer: agent
+  name: Grok Build
+  summary: xAI's terminal agent with interactive and headless modes.
+  url: https://docs.x.ai/build/overview
+zed-agent:
+  layer: agent
+  name: Zed agent
+  summary: The agent panel in the Zed editor. It also hosts external agents through ACP.
+  url: https://zed.dev/docs/ai/external-agents
+  needs:
+    - parts: [on-prem]
+      why: Zed is an editor that runs on your machine.
+      source: https://zed.dev/docs/ai/external-agents
+opencode:
+  layer: agent
+  name: OpenCode
+  summary: Open-source terminal agent for 75+ model providers, also in GitHub Actions.
+  url: https://opencode.ai/docs/
+continue:
+  layer: agent
+  name: Continue
+  summary: Open-source agents for the IDE and CLI, for any model provider.
+  url: https://docs.continue.dev/
+auggie:
+  layer: agent
+  name: Auggie
+  summary: Augment Code's agent in the terminal and in CI.
+  url: https://docs.augmentcode.com/cli/overview
+qwen-code:
+  layer: agent
+  name: Qwen Code
+  summary: Alibaba's open-source terminal agent for Qwen and other OpenAI-compatible models.
+  url: https://qwenlm.github.io/qwen-code-docs/en/
+
+# Workflow
+gitlab-ci:
+  layer: workflow
+  name: GitLab CI
+  summary: GitLab pipelines that run agents on merge requests, issues or a schedule.
+  url: https://docs.gitlab.com/ci/
+slack:
+  layer: workflow
+  name: Slack
+  summary: Start agents by mentioning them in Slack and get results back in the thread.
+  url: https://slack.com
+linear:
+  layer: workflow
+  name: Linear
+  summary: Assign Linear issues to agents.
+  url: https://linear.app/docs/agents-in-linear
+jira:
+  layer: workflow
+  name: Jira
+  summary: Assign Jira issues to agents.
+  url: https://www.atlassian.com/software/jira
+msteams:
+  layer: workflow
+  name: Microsoft Teams
+  summary: Start agents from Teams chats.
+  url: https://www.microsoft.com/microsoft-teams
+
+# Schedulers
+claude-desktop-scheduled-tasks:
+  layer: scheduler
+  name: Claude Desktop scheduled tasks
+  summary: Local routines in the Claude desktop app that run on your machine with your files.
+  url: https://code.claude.com/docs/en/desktop-scheduled-tasks
+  needs:
+    - parts: [on-prem]
+      why: Desktop scheduled tasks run on your machine.
+      source: https://code.claude.com/docs/en/desktop-scheduled-tasks
+    - parts: [claude-code]
+      why: Desktop scheduled tasks run Claude Code.
+      source: https://code.claude.com/docs/en/desktop-scheduled-tasks
+codex-automations:
+  layer: scheduler
+  name: Codex automations
+  summary: Scheduled Codex tasks. Desktop tasks run locally, web tasks run in the cloud.
+  url: https://learn.chatgpt.com/docs/automations?surface=app
+  needs:
+    - parts: [codex]
+      why: Codex automations run Codex tasks.
+      source: https://learn.chatgpt.com/docs/automations?surface=app
+cursor-automations:
+  layer: scheduler
+  name: Cursor automations
+  summary: Start Cursor cloud agents from presets or a cron schedule.
+  url: https://cursor.com/docs/cloud-agent/automations
+  needs:
+    - parts: [cursor-cloud-agents]
+      why: Cursor automations start Cursor cloud agents.
+      source: https://cursor.com/docs/cloud-agent/automations
+devin-scheduled-sessions:
+  layer: scheduler
+  name: Devin scheduled sessions
+  summary: Run Devin sessions on a cron schedule or once at a set time.
+  url: https://docs.devin.ai/product-guides/scheduled-sessions
+  needs:
+    - parts: [devin]
+      why: Scheduled sessions are Devin sessions.
+      source: https://docs.devin.ai/product-guides/scheduled-sessions
+jules-scheduled-tasks:
+  layer: scheduler
+  name: Jules scheduled tasks
+  summary: Daily or weekly Jules tasks.
+  url: https://jules.google/docs/scheduled-tasks/
+  needs:
+    - parts: [jules]
+      why: Scheduled tasks are Jules tasks.
+      source: https://jules.google/docs/scheduled-tasks/
+goose-schedule:
+  layer: scheduler
+  name: Goose schedule
+  summary: Run Goose recipes on a cron schedule.
+  url: https://github.com/aaif-goose/goose
+  needs:
+    - parts: [goose]
+      why: goose schedule runs Goose recipes.
+      source: https://www.mankier.com/1/goose-schedule
+warp-schedules:
+  layer: scheduler
+  name: Warp schedules
+  summary: Run Warp cloud agents on a schedule.
+  url: https://docs.warp.dev/agent-platform/cloud-agents/overview
+  needs:
+    - parts: [warp-cloud-agents]
+      why: Warp schedules start Warp cloud agents.
+      source: https://docs.warp.dev/agent-platform/cloud-agents/overview
+kiro-crew-cron:
+  layer: scheduler
+  name: Kiro Crew cron
+  summary: Cron jobs and heartbeats built into Kiro Crew.
+  url: https://kiro.dev/docs/crew/
+  needs:
+    - parts: [kiro-crew]
+      why: The cron is part of Kiro Crew.
+      source: https://kiro.dev/docs/crew/
+
+# Models
+gemini:
+  layer: models
+  name: Gemini
+  summary: Google's models, through the Gemini API or Vertex AI.
+  url: https://ai.google.dev/gemini-api/docs/models
+mistral:
+  layer: models
+  name: Mistral
+  summary: Mistral's models, including Devstral. Some have open weights.
+  url: https://docs.mistral.ai/getting-started/models/
+grok:
+  layer: models
+  name: Grok
+  summary: xAI's models.
+  url: https://docs.x.ai/docs/models
+deepseek:
+  layer: models
+  name: DeepSeek
+  summary: DeepSeek's models, through its API or as open weights.
+  url: https://api-docs.deepseek.com/
+qwen:
+  layer: models
+  name: Qwen
+  summary: Alibaba's Qwen models, through Alibaba Cloud or as open weights.
+  url: https://qwenlm.github.io/
+kimi:
+  layer: models
+  name: Kimi
+  summary: Moonshot AI's Kimi models.
+  url: https://platform.moonshot.ai/docs
+
+
+# ---- Added from platform research, 2026-10-07. Each rule cites its source. ----
+
+# Agents and agent platforms
+in-house-agent:
+  layer: agent
+  name: In-house agent
+  summary: An agent a company built itself, often on top of an open-source agent or an SDK.
+langgraph:
+  layer: agent
+  name: LangGraph
+  summary: LangChain's framework for stateful agent graphs. LangSmith Deployment hosts them, with cron jobs.
+  url: https://docs.langchain.com/langsmith/deployments
+workflow-ai-step:
+  layer: agent
+  name: AI step in a workflow
+  summary: A model call or agent step inside a workflow tool, with no separate agent product.
+gitlab-duo:
+  layer: agent
+  name: GitLab Duo agents
+  summary: GitLab's agents and flows in the Duo Agent Platform.
+  url: https://docs.gitlab.com/user/duo_agent_platform/
+rovo-dev:
+  layer: agent
+  name: Rovo Dev
+  summary: Atlassian's coding agent, also an automatic pull request reviewer.
+  url: https://www.atlassian.com/software/rovo-dev
+claude-tag:
+  layer: agent
+  name: Claude Tag
+  summary: Claude as a teammate in Slack channels, with scheduled jobs. It replaced the Claude in Slack app.
+  url: https://claude.com/docs/claude-tag/overview
+  needs:
+    - parts: [cloud]
+      why: Claude Tag runs in an ephemeral Anthropic sandbox, not on your computer.
+      source: https://claude.com/docs/claude-tag/overview
+    - parts: [claude]
+      why: Claude Tag is an Anthropic product that runs Claude only.
+      source: https://claude.com/docs/claude-tag/overview
+    - parts: [slack]
+      why: Claude Tag works inside Slack channels.
+      source: https://claude.com/docs/claude-tag/overview
+copilot-studio:
+  layer: agent
+  name: Microsoft Copilot Studio
+  summary: Low-code studio for agents across Microsoft 365, Teams and the web, with scheduled triggers.
+  url: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
+  needs:
+    - parts: [cloud]
+      why: Copilot Studio is a hosted service with no self-host option.
+      source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
+    - parts: [openai, claude, grok, mistral]
+      why: Copilot Studio offers a fixed model list. It has no local model endpoint.
+      source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/authoring-select-agent-model
+azure-foundry-agent-service:
+  layer: agent
+  name: Microsoft Foundry Agent Service
+  summary: Managed Azure service that hosts agents on models deployed in Microsoft Foundry.
+  url: https://learn.microsoft.com/en-us/azure/foundry/agents/overview
+  needs:
+    - parts: [cloud]
+      why: Foundry Agent Service is a managed Azure service.
+      source: https://learn.microsoft.com/en-us/azure/foundry/agents/overview
+    - parts: [openai, grok, llama, deepseek]
+      why: Agents use Foundry model deployments only.
+      source: https://learn.microsoft.com/en-us/azure/foundry-classic/agents/concepts/model-region-support
+bedrock-agentcore:
+  layer: agent
+  name: Amazon Bedrock AgentCore
+  summary: AWS serverless platform that runs agents built with any framework and any model.
+  url: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html
+  needs:
+    - parts: [cloud]
+      why: AgentCore is a fully managed AWS service.
+      source: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html
+gemini-enterprise-agent-platform:
+  layer: agent
+  name: Gemini Enterprise Agent Platform
+  summary: Google Cloud's platform, formerly Vertex AI, that hosts ADK, LangGraph and CrewAI agents.
+  url: https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime
+  needs:
+    - parts: [cloud]
+      why: Agent Runtime is a managed Google Cloud service.
+      source: https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime
+gemini-enterprise-agent-designer:
+  layer: agent
+  name: Gemini Enterprise Agent Designer
+  summary: No-code agent builder in the Gemini Enterprise app, formerly Agentspace, with scheduled runs.
+  url: https://docs.cloud.google.com/gemini/enterprise/docs/agent-designer
+  needs:
+    - parts: [cloud]
+      why: Agent Designer is a hosted Google Cloud app.
+      source: https://docs.cloud.google.com/gemini/enterprise/docs/agent-designer
+salesforce-agentforce:
+  layer: agent
+  name: Salesforce Agentforce
+  summary: CRM agents on Salesforce's Atlas reasoning engine, behind the Einstein Trust Layer.
+  url: https://www.salesforce.com/agentforce/
+  needs:
+    - parts: [cloud]
+      why: Agentforce runs only in Salesforce's cloud.
+      source: https://www.salesforce.com/agentforce/
+servicenow-ai-agents:
+  layer: agent
+  name: ServiceNow AI Agents
+  summary: Agents in the ServiceNow AI Platform, built in AI Agent Studio.
+  url: https://www.servicenow.com/docs/r/intelligent-experiences/na-ai-agents.html
+  needs:
+    - parts: [cloud]
+      why: Now Assist is not available to self-hosted ServiceNow customers.
+      source: https://www.servicenow.com/docs/r/intelligent-experiences/na-ai-agents.html
+relevance-ai:
+  layer: agent
+  name: Relevance AI
+  summary: No-code builder for teams of AI agents, with scheduled runs.
+  url: https://relevanceai.com/docs
+lindy:
+  layer: agent
+  name: Lindy
+  summary: No-code assistant agents for email, meetings and CRM, with thousands of app integrations.
+  url: https://docs.lindy.ai
+crewai:
+  layer: agent
+  name: CrewAI
+  summary: Python framework for teams of agents, plus a managed platform you can also self-host.
+  url: https://docs.crewai.com
+dify:
+  layer: agent
+  name: Dify
+  summary: Open-source builder for LLM apps, agents and workflows, with a schedule trigger.
+  url: https://docs.dify.ai
+flowise:
+  layer: agent
+  name: Flowise
+  summary: Open-source visual agent builder.
+  url: https://docs.flowiseai.com
+langflow:
+  layer: agent
+  name: Langflow
+  summary: Open-source visual builder for agents and flows.
+  url: https://docs.langflow.org
+
+# Workflow
+temporal:
+  layer: workflow
+  name: Temporal
+  summary: Durable workflow engine. Steps such as clone, run agent and open a PR survive restarts.
+  url: https://docs.temporal.io
+make:
+  layer: workflow
+  name: Make
+  summary: Visual automation in the cloud, with an AI Agent app.
+  url: https://help.make.com/introduction-to-make-ai-agent-new
+  needs:
+    - parts: [cloud]
+      why: Make has no public self-hosted edition.
+      source: https://developers.make.com/white-label-documentation/release-notes/release-2025.04.md
+power-automate:
+  layer: workflow
+  name: Power Automate
+  summary: Microsoft's cloud flows and desktop RPA flows, with AI prompts on Azure OpenAI.
+  url: https://learn.microsoft.com/power-automate/triggers-introduction
+azure-logic-apps:
+  layer: workflow
+  name: Azure Logic Apps
+  summary: Azure integration workflows with agent loops and 1,400+ connectors.
+  url: https://learn.microsoft.com/en-us/azure/logic-apps/agent-workflows-concepts
+aws-step-functions:
+  layer: workflow
+  name: AWS Step Functions
+  summary: AWS state machines with Bedrock and AgentCore steps.
+  url: https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html
+  needs:
+    - parts: [cloud]
+      why: Step Functions is a managed AWS service.
+      source: https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html
+pipedream:
+  layer: workflow
+  name: Pipedream
+  summary: Code-first serverless workflows and an AI agent builder for 3,000+ apps.
+  url: https://pipedream.com
+windmill:
+  layer: workflow
+  name: Windmill
+  summary: Open-source scripts and flows platform with AI agent steps.
+  url: https://www.windmill.dev/docs/core_concepts/ai_agents
+trigger-dev:
+  layer: workflow
+  name: Trigger.dev
+  summary: TypeScript background tasks and AI agents with retries and queues.
+  url: https://trigger.dev/docs
+inngest:
+  layer: workflow
+  name: Inngest
+  summary: Durable step functions, with AgentKit for networks of agents.
+  url: https://www.inngest.com/docs
+kestra:
+  layer: workflow
+  name: Kestra
+  summary: Open-source YAML orchestrator with an AI agent task.
+  url: https://kestra.io/plugins/plugin-ai
+airflow:
+  layer: workflow
+  name: Apache Airflow
+  summary: Python DAG orchestrator. The common.ai provider adds LLM and agent operators.
+  url: https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/index.html
+
+# Schedulers
+cron:
+  layer: scheduler
+  name: Cron
+  summary: A plain cron job or systemd timer on a machine you run.
+  url: https://www.mankier.com/5/crontab
+kubernetes-cronjob:
+  layer: scheduler
+  name: Kubernetes CronJob
+  summary: Kubernetes creates a Job on a cron schedule.
+  url: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+aws-eventbridge-scheduler:
+  layer: scheduler
+  name: Amazon EventBridge Scheduler
+  summary: Serverless cron, rate and one-time schedules that target AWS APIs.
+  url: https://docs.aws.amazon.com/step-functions/latest/dg/using-eventbridge-scheduler.html
+  needs:
+    - parts: [cloud]
+      why: EventBridge Scheduler targets AWS APIs only.
+      source: https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html
+google-cloud-scheduler:
+  layer: scheduler
+  name: Google Cloud Scheduler
+  summary: Managed cron that calls HTTP endpoints or Pub/Sub.
+  url: https://docs.cloud.google.com/scheduler/docs/creating
+  needs:
+    - parts: [cloud]
+      why: Cloud Scheduler HTTP targets must be publicly reachable.
+      source: https://docs.cloud.google.com/scheduler/docs/creating
+temporal-schedules:
+  layer: scheduler
+  name: Temporal Schedules
+  summary: The schedule built into Temporal.
+  url: https://docs.temporal.io/schedule
+  needs:
+    - parts: [temporal]
+      why: Temporal Schedules only starts Temporal.
+      source: https://docs.temporal.io/schedule
+make-scheduling:
+  layer: scheduler
+  name: Make scheduling
+  summary: The schedule built into Make.
+  url: https://help.make.com/introduction-to-make-ai-agent-new
+  needs:
+    - parts: [make]
+      why: Make scheduling only starts Make.
+      source: https://help.make.com/introduction-to-make-ai-agent-new
+power-automate-recurrence:
+  layer: scheduler
+  name: Power Automate Recurrence
+  summary: The schedule built into Power Automate.
+  url: https://learn.microsoft.com/power-automate/triggers-introduction
+  needs:
+    - parts: [power-automate]
+      why: Power Automate Recurrence only starts Power Automate.
+      source: https://learn.microsoft.com/power-automate/triggers-introduction
+copilot-studio-triggers:
+  layer: scheduler
+  name: Copilot Studio schedule trigger
+  summary: The schedule built into Copilot Studio.
+  url: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
+  needs:
+    - parts: [copilot-studio]
+      why: Copilot Studio schedule trigger only starts Copilot Studio.
+      source: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
+claude-tag-scheduled-jobs:
+  layer: scheduler
+  name: Claude Tag scheduled jobs
+  summary: The schedule built into Claude Tag.
+  url: https://claude.com/docs/claude-tag/overview
+  needs:
+    - parts: [claude-tag]
+      why: Claude Tag scheduled jobs only starts Claude Tag.
+      source: https://claude.com/docs/claude-tag/overview
+gemini-agent-designer-schedule:
+  layer: scheduler
+  name: Agent Designer schedules
+  summary: The schedule built into Gemini Enterprise Agent Designer.
+  url: https://docs.cloud.google.com/gemini/enterprise/docs/agent-designer
+  needs:
+    - parts: [gemini-enterprise-agent-designer]
+      why: Agent Designer schedules only starts Gemini Enterprise Agent Designer.
+      source: https://docs.cloud.google.com/gemini/enterprise/docs/agent-designer
+langgraph-cron:
+  layer: scheduler
+  name: LangSmith Deployment cron jobs
+  summary: The schedule built into LangGraph agents on LangSmith Deployment.
+  url: https://docs.langchain.com/langsmith/deployments
+  needs:
+    - parts: [langgraph]
+      why: LangSmith Deployment cron jobs only starts LangGraph agents on LangSmith Deployment.
+      source: https://docs.langchain.com/langsmith/deployments
+dify-schedule-trigger:
+  layer: scheduler
+  name: Dify Schedule Trigger
+  summary: The schedule built into Dify workflows.
+  url: https://docs.dify.ai/en/use-dify/nodes/trigger/schedule-trigger
+  needs:
+    - parts: [dify]
+      why: Dify Schedule Trigger only starts Dify workflows.
+      source: https://docs.dify.ai/en/use-dify/nodes/trigger/schedule-trigger
+kestra-schedule:
+  layer: scheduler
+  name: Kestra Schedule trigger
+  summary: The schedule built into Kestra flows.
+  url: https://kestra.io/plugins/plugin-ai
+  needs:
+    - parts: [kestra]
+      why: Kestra Schedule trigger only starts Kestra flows.
+      source: https://kestra.io/plugins/plugin-ai
+airflow-schedule:
+  layer: scheduler
+  name: Airflow DAG schedule
+  summary: The schedule built into Airflow DAGs.
+  url: https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/index.html
+  needs:
+    - parts: [airflow]
+      why: Airflow DAG schedule only starts Airflow DAGs.
+      source: https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/index.html
+inngest-cron:
+  layer: scheduler
+  name: Inngest cron functions
+  summary: The schedule built into Inngest functions.
+  url: https://www.inngest.com/docs/guides/scheduled-functions
+  needs:
+    - parts: [inngest]
+      why: Inngest cron functions only starts Inngest functions.
+      source: https://www.inngest.com/docs/guides/scheduled-functions
+trigger-dev-schedules:
+  layer: scheduler
+  name: Trigger.dev scheduled tasks
+  summary: The schedule built into Trigger.dev tasks.
+  url: https://trigger.dev/docs
+  needs:
+    - parts: [trigger-dev]
+      why: Trigger.dev scheduled tasks only starts Trigger.dev tasks.
+      source: https://trigger.dev/docs
+windmill-schedules:
+  layer: scheduler
+  name: Windmill schedules
+  summary: The schedule built into Windmill scripts and flows.
+  url: https://www.windmill.dev/docs/core_concepts/ai_agents
+  needs:
+    - parts: [windmill]
+      why: Windmill schedules only starts Windmill scripts and flows.
+      source: https://www.windmill.dev/docs/core_concepts/ai_agents
+pipedream-schedule:
+  layer: scheduler
+  name: Pipedream Schedule trigger
+  summary: The schedule built into Pipedream workflows.
+  url: https://pipedream.com/docs/workflows/building-workflows/triggers
+  needs:
+    - parts: [pipedream]
+      why: Pipedream Schedule trigger only starts Pipedream workflows.
+      source: https://pipedream.com/docs/workflows/building-workflows/triggers
+gitlab-pipeline-schedules:
+  layer: scheduler
+  name: GitLab pipeline schedules
+  summary: The schedule built into GitLab CI pipelines.
+  url: https://docs.gitlab.com/ci/pipelines/schedules/
+  needs:
+    - parts: [gitlab-ci]
+      why: GitLab pipeline schedules only starts GitLab CI pipelines.
+      source: https://docs.gitlab.com/ci/pipelines/schedules/
+
+# Models
+llama:
+  layer: models
+  name: Llama
+  summary: Meta's open-weight Llama models.
+  url: https://www.llama.com
+cohere:
+  layer: models
+  name: Cohere Command
+  summary: Cohere's Command models. Some have open weights.
+  url: https://docs.cohere.com/docs/models

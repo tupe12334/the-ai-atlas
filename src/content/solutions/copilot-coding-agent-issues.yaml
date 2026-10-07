@@ -1,0 +1,9 @@
+name: "Copilot coding agent from issues"
+summary: "Assign an issue to Copilot. It works in a GitHub Actions environment and opens a PR. Linear, Jira, Slack and Teams can assign work too."
+company: "GitHub"
+proof: vendor
+url: https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent
+runtime: [cloud, on-prem]
+agent: [copilot-coding-agent]
+workflow: [github-actions, linear, jira, slack, msteams]
+models: [openai, claude, gemini]

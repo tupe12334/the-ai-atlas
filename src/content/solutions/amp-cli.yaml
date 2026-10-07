@@ -1,0 +1,9 @@
+name: "Amp in the terminal"
+summary: "Amp picks the model for each task, on your machine or in cloud threads."
+company: "Sourcegraph"
+proof: vendor
+url: https://ampcode.com/manual
+runtime: [on-prem, cloud]
+agent: [amp]
+workflow: [slack]
+models: [openai, claude]

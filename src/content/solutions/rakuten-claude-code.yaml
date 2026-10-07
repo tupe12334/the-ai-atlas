@@ -1,0 +1,7 @@
+name: "Rakuten Claude Code"
+summary: "Engineers run parallel Claude Code sessions, including a seven-hour autonomous implementation run. Time to market fell from 24 to 5 days."
+company: "Rakuten"
+proof: in-production
+url: https://www.claude.com/customers/rakuten
+agent: [claude-code]
+models: [claude]

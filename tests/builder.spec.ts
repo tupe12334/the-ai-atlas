@@ -13,7 +13,7 @@ test("each pick narrows what fits next, and says why the rest does not fit", asy
   await part(page, "Cloud").check();
   // Moadim only runs on your own machine, so it leaves the list.
   await expect(card(page, "Moadim")).toBeHidden();
-  await page.getByRole("button", { name: /Show 1 part that does not fit/ }).click();
+  await page.getByRole("group", { name: /Scheduler/ }).getByRole("button", { name: /^Show \d+ parts? that do(es)? not fit/ }).click();
   await expect(card(page, "Moadim")).toContainText("Does not fit Cloud. Moadim runs routines on your own machine.");
 
   await part(page, "Claude Code").check();
@@ -142,7 +142,19 @@ test("the catalog check rejects a proven stack that breaks a rule", () => {
     moadim: { id: "moadim", layer: "scheduler", name: "Moadim", needs: [{ parts: ["on-prem"], why: "Local only." }] },
   };
   const stack = { runtime: ["on-prem", "cloud"], agent: ["hermes"], workflow: [], scheduler: ["moadim"], models: [] };
-  expect(checkCatalog(parts, { s: stack })).toEqual(["s: moadim with cloud: Local only."]);
+  expect(checkCatalog(parts, { s: stack })).toEqual([
+    "s: cloud does not work with the other parts of the stack in any combination",
+  ]);
+  expect(checkCatalog(parts, { s: { ...stack, runtime: ["cloud"] } })).toEqual(["s: moadim with cloud: Local only."]);
+  // Alternatives that only work in some mixes pass, as long as each one works somewhere.
+  const paired: Parts = {
+    ...parts,
+    claude: { id: "claude", layer: "models", name: "Claude", needs: [] },
+    openai: { id: "openai", layer: "models", name: "OpenAI", needs: [] },
+    a: { id: "a", layer: "agent", name: "A", needs: [{ parts: ["claude"], why: "" }] },
+    b: { id: "b", layer: "agent", name: "B", needs: [{ parts: ["openai"], why: "" }] },
+  };
+  expect(checkCatalog(paired, { s: { ...stack, scheduler: [], agent: ["a", "b"], models: ["claude", "openai"] } })).toEqual([]);
   expect(checkCatalog(parts, { s: { ...stack, agent: ["moadim"] } })).toEqual([
     's: "moadim" is not a agent part in parts.yaml',
   ]);
@@ -167,4 +179,13 @@ test("on a phone, a bar keeps the build in view while picking", async ({ page })
   await part(page, "Claude").check();
   await expect(peek).toContainText("All parts work together");
   await expect(peek).toContainText("Cloud · Claude Code · Claude");
+});
+
+test("starts from any company's stack picked from the menu", async ({ page }) => {
+  await page.goto("./build/");
+  await page.getByLabel("Or start from a proven stack and change it").selectOption({ label: "Stripe Minions (runs in production)" });
+  await expect(page.getByLabel("Build name")).toHaveValue("Stripe Minions");
+  await expect(part(page, "Goose")).toBeChecked();
+  await expect(part(page, "Slack")).toBeChecked();
+  await expect(check(page)).toContainText("Proven: Stripe Minions");
 });

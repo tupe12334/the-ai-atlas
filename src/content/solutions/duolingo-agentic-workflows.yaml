@@ -1,0 +1,8 @@
+name: "Duolingo agentic workflows"
+summary: "Temporal workflows clone a repo, run Codex or Claude Code, commit and open a PR, for jobs like flag removal and Terraform changes."
+company: "Duolingo"
+proof: in-production
+url: https://blog.duolingo.com/agentic-workflows
+agent: [codex, claude-code]
+workflow: [temporal]
+models: [openai, claude]

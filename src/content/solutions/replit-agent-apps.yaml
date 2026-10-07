@@ -1,0 +1,7 @@
+name: "Replit Agent"
+summary: "Describe an app and Replit Agent builds and deploys it in Replit's cloud."
+company: "Replit"
+proof: vendor
+url: https://docs.replit.com/replitai/agent
+runtime: [cloud]
+agent: [replit-agent]

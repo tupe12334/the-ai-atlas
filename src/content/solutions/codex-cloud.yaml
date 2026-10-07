@@ -1,5 +1,7 @@
 name: Codex cloud tasks
 summary: Hand coding tasks to OpenAI Codex agents running in cloud sandboxes.
+company: OpenAI
+proof: vendor
 url: https://openai.com/codex
 runtime: [cloud]
 agent: [codex]

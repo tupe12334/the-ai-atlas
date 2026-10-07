@@ -1,0 +1,9 @@
+name: "Gemini Enterprise Agent Designer"
+summary: "Build a no-code agent in Gemini Enterprise and schedule it to run on a recurring basis."
+company: "Google"
+proof: vendor
+url: https://docs.cloud.google.com/gemini/enterprise/docs/agent-designer
+runtime: [cloud]
+agent: [gemini-enterprise-agent-designer]
+scheduler: [gemini-agent-designer-schedule]
+models: [gemini]

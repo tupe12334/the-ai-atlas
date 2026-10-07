@@ -1,0 +1,9 @@
+name: "Agent in a Kubernetes CronJob"
+summary: "Package any headless agent CLI in a container and run it on a CronJob in your cluster."
+company: "Kubernetes"
+proof: vendor
+url: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+runtime: [on-prem, cloud]
+agent: [claude-code, codex, opencode]
+scheduler: [kubernetes-cronjob]
+models: [claude, openai]

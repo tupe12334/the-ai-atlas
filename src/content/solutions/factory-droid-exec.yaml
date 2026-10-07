@@ -1,0 +1,9 @@
+name: "Factory Droids in CI and Linear"
+summary: "Run droid exec in GitHub Actions, or assign Linear issues to Droids."
+company: "Factory"
+proof: vendor
+url: https://docs.factory.com/cli/droid-exec/overview
+runtime: [cloud]
+agent: [factory-droids]
+workflow: [github-actions, linear]
+models: [claude, openai, gemini]

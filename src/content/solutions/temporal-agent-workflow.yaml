@@ -1,0 +1,10 @@
+name: "Agent steps in Temporal"
+summary: "Run LLM calls as Temporal activities, on Temporal Schedules, self-hosted or on Temporal Cloud."
+company: "Temporal"
+proof: vendor
+url: https://docs.temporal.io
+runtime: [on-prem, cloud]
+agent: [openai-agents-sdk]
+workflow: [temporal]
+scheduler: [temporal-schedules]
+models: [openai, any-openai-compatible]

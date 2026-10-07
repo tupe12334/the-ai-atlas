@@ -1,5 +1,7 @@
 name: Hermes + Moadim on your own machine
 summary: Run Hermes Agent locally and fire scheduled agent routines with Moadim crons.
+company: Moadim
+proof: vendor
 url: https://moadim.io
 runtime: [on-prem]
 agent: [hermes]

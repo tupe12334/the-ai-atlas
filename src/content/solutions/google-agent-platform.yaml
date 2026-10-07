@@ -1,0 +1,9 @@
+name: "Agent on Gemini Enterprise Agent Platform"
+summary: "Deploy an ADK or LangGraph agent to Agent Runtime and start it with Cloud Scheduler."
+company: "Google"
+proof: vendor
+url: https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime
+runtime: [cloud]
+agent: [gemini-enterprise-agent-platform]
+scheduler: [google-cloud-scheduler]
+models: [gemini, claude]

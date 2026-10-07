@@ -1,5 +1,7 @@
 name: Claude Code routines in the cloud
 summary: Scheduled Claude Code agents that run on Anthropic's cloud, no machine of your own needed.
+company: Anthropic
+proof: vendor
 url: https://code.claude.com/docs/en/routines
 runtime: [cloud]
 agent: [claude-code]

@@ -45,9 +45,6 @@ export function readBuild(params: URLSearchParams, parts: Parts): Build {
   return build;
 }
 
-/** The first variant of a stack, as a build to start from. */
-export const stackBuild = (stack: Stack): Build =>
-  Object.fromEntries(Object.entries(stack).flatMap(([layer, ids]) => (ids.length ? [[layer, ids[0]]] : [])));
 
 /** Every build a stack lists: one pick per layer, across all the alternatives it names. */
 function variants(stack: Stack): Build[] {
@@ -56,6 +53,13 @@ function variants(stack: Stack): Build[] {
     [{}],
   );
 }
+
+/** The variants of a stack that break no rule and leave no need open. */
+const workingVariants = (stack: Stack, parts: Parts) =>
+  variants(stack).filter((b) => !conflicts(b, parts).length && !gaps(b, parts).length);
+
+/** The first working variant of a stack, as a build to start from. */
+export const stackBuild = (stack: Stack, parts: Parts): Build => workingVariants(stack, parts)[0] ?? {};
 
 /** Errors in the catalog: unknown ids, rules that point across layers wrongly, and proven stacks that break a rule. */
 export function checkCatalog(parts: Parts, stacks: Record<string, Stack>): string[] {
@@ -75,9 +79,23 @@ export function checkCatalog(parts: Parts, stacks: Record<string, Stack>): strin
     );
     errors.push(...unknown);
     if (unknown.length) continue;
-    for (const build of variants(stack)) {
-      for (const c of conflicts(build, parts)) errors.push(`${name}: ${c.part} with ${c.other}: ${c.why}`);
-      for (const g of gaps(build, parts)) errors.push(`${name}: ${g.part} needs one of [${g.parts}]: ${g.why}`);
+    // A stack lists alternatives per layer, and not every mix of them has to work
+    // (Codex with OpenAI and Claude Code with Claude). Each listed part must work in some clean variant.
+    const all = variants(stack);
+    const clean = workingVariants(stack, parts);
+    if (!clean.length) {
+      const [c] = conflicts(all[0], parts);
+      const [g] = gaps(all[0], parts);
+      errors.push(
+        c ? `${name}: ${c.part} with ${c.other}: ${c.why}` : `${name}: ${g.part} needs one of [${g.parts}]: ${g.why}`,
+      );
+      continue;
+    }
+    for (const [layer, ids] of Object.entries(stack)) {
+      for (const id of ids) {
+        if (!clean.some((b) => b[layer as Layer] === id))
+          errors.push(`${name}: ${id} does not work with the other parts of the stack in any combination`);
+      }
     }
   }
   return errors;

@@ -1,0 +1,8 @@
+name: "Shopify River"
+summary: "In-house agent that works only in public Slack channels, with durable sessions on Shopify's own sandbox platform."
+company: "Shopify"
+proof: in-production
+url: https://shopify.engineering/under-the-river
+runtime: [on-prem]
+agent: [in-house-agent]
+workflow: [slack]

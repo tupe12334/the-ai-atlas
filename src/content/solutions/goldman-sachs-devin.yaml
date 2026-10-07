@@ -1,0 +1,7 @@
+name: "Goldman Sachs Devin pilot"
+summary: "Hundreds of Devin instances work on legacy refactoring and migrations next to Goldman's developers."
+company: "Goldman Sachs"
+proof: in-production
+url: https://www.nbcchicago.com/news/business/money-report/goldman-sachs-is-piloting-its-first-autonomous-coder-in-major-ai-milestone-for-wall-street/3787263/
+runtime: [cloud]
+agent: [devin]

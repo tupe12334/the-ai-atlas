@@ -1,0 +1,9 @@
+name: "Spotify Honk"
+summary: "Background agent on the Claude Agent SDK runs fleet-wide migrations from prompts and opens PRs. An LLM judge checks each change."
+company: "Spotify"
+proof: in-production
+url: https://engineering.atspotify.com/2025/11/spotifys-background-coding-agent-part-1
+sources: [https://engineering.atspotify.com/2025/12/feedback-loops-background-coding-agents-part-3]
+agent: [claude-agent-sdk]
+workflow: [slack]
+models: [claude]

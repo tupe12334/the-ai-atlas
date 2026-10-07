@@ -1,0 +1,9 @@
+name: "Pipedream AI agents"
+summary: "Code-first workflows and agents over 3,000+ apps, on schedule triggers."
+company: "Pipedream"
+proof: vendor
+url: https://pipedream.com
+runtime: [cloud]
+agent: [workflow-ai-step]
+workflow: [pipedream]
+scheduler: [pipedream-schedule]

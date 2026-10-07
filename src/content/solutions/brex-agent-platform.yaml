@@ -1,0 +1,8 @@
+name: "Brex autonomous agent platform"
+summary: "An orchestrator sends tasks from Slack, Linear, GitHub or cron jobs to agents in remote dev environments, and feeds CI results back."
+company: "Brex"
+proof: in-production
+url: https://brex.com/journal/building-autonomous-agents-for-technical-tasks
+agent: [in-house-agent]
+workflow: [slack, linear]
+scheduler: [cron]

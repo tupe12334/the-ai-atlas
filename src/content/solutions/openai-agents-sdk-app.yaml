@@ -1,0 +1,8 @@
+name: "OpenAI Agents SDK app"
+summary: "Build your own multi-agent app with the Agents SDK and host it anywhere."
+company: "OpenAI"
+proof: vendor
+url: https://openai.github.io/openai-agents-python/
+runtime: [on-prem, cloud]
+agent: [openai-agents-sdk]
+models: [openai, any-openai-compatible]

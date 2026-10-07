@@ -1,0 +1,8 @@
+name: "Relevance AI workforce"
+summary: "No-code agents that run on schedules and app triggers."
+company: "Relevance AI"
+proof: vendor
+url: https://relevanceai.com/docs
+runtime: [cloud]
+agent: [relevance-ai]
+models: [openai, claude, gemini]

@@ -1,0 +1,8 @@
+name: "Aider with local models"
+summary: "Pair-program in the terminal with any model, including local ones through Ollama."
+company: "Aider"
+proof: vendor
+url: https://aider.chat/docs/llms.html
+runtime: [on-prem]
+agent: [aider]
+models: [local-models, claude, openai, gemini, deepseek, any-openai-compatible]

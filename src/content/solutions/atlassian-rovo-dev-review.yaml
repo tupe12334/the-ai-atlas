@@ -1,0 +1,6 @@
+name: "Atlassian Rovo Dev code review"
+summary: "Rovo Dev is the automatic first reviewer on every internal PR. PR cycle time fell by 45%."
+company: "Atlassian"
+proof: in-production
+url: https://www.atlassian.com/blog/rovo/how-we-cut-pr-cycle-time-with-ai-code-reviews
+agent: [rovo-dev]

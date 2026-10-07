@@ -1,0 +1,9 @@
+name: "Jules with scheduled tasks"
+summary: "Give Jules a GitHub repo and a daily or weekly task. It works in a Google cloud VM and opens a PR."
+company: "Google"
+proof: vendor
+url: https://jules.google/docs/scheduled-tasks/
+runtime: [cloud]
+agent: [jules]
+scheduler: [jules-scheduled-tasks]
+models: [gemini]

@@ -1,0 +1,8 @@
+name: "Flowise Agentflow"
+summary: "Build an agent visually and self-host it with npx or Docker, with local models through Ollama."
+company: "FlowiseAI"
+proof: vendor
+url: https://docs.flowiseai.com
+runtime: [on-prem, cloud]
+agent: [flowise]
+models: [local-models, openai, claude]

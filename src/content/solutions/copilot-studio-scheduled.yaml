@@ -1,0 +1,10 @@
+name: "Copilot Studio agent on a schedule"
+summary: "Build an agent in Copilot Studio and start it with a schedule trigger, in Teams and Microsoft 365."
+company: "Microsoft"
+proof: vendor
+url: https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio
+runtime: [cloud]
+agent: [copilot-studio]
+workflow: [msteams]
+scheduler: [copilot-studio-triggers]
+models: [openai, claude]

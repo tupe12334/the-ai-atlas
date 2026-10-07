@@ -1,0 +1,9 @@
+name: "Dify workflow on a schedule"
+summary: "Self-host Dify with Docker and run an agent workflow on its Schedule Trigger."
+company: "Dify"
+proof: vendor
+url: https://docs.dify.ai/en/use-dify/nodes/trigger/schedule-trigger
+runtime: [on-prem, cloud]
+agent: [dify]
+scheduler: [dify-schedule-trigger]
+models: [openai, claude, local-models]

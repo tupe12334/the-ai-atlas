@@ -1,0 +1,9 @@
+name: "Cursor cloud agents with automations"
+summary: "Cursor cloud agents start from Slack, Linear or GitHub, or on a cron schedule, in Cursor VMs or on your own machines."
+company: "Cursor"
+proof: vendor
+url: https://cursor.com/docs/cloud-agent/automations
+runtime: [cloud, on-prem]
+agent: [cursor-cloud-agents]
+workflow: [slack, linear]
+scheduler: [cursor-automations]

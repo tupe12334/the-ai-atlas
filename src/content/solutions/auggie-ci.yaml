@@ -1,0 +1,8 @@
+name: "Auggie in CI"
+summary: "Run Augment's agent in print mode from GitHub Actions."
+company: "Augment Code"
+proof: vendor
+url: https://docs.augmentcode.com/cli/overview
+runtime: [cloud]
+agent: [auggie]
+workflow: [github-actions]

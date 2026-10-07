@@ -1,0 +1,11 @@
+name: "GitHub Agentic Workflows"
+summary: "Workflows written in Markdown run a coding agent in GitHub Actions for triage, docs, tests and reports, on events or a schedule."
+company: "GitHub"
+proof: in-production
+url: https://github.blog/ai-and-ml/automate-repository-tasks-with-github-agentic-workflows/
+sources: [https://github.github.com/gh-aw/]
+runtime: [cloud]
+agent: [copilot-cli, claude-code, codex]
+workflow: [github-actions]
+scheduler: [github-actions-cron]
+models: [claude, openai]

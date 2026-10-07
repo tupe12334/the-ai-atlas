@@ -1,0 +1,10 @@
+name: "Copilot CLI on a schedule"
+summary: "Run Copilot CLI in GitHub Actions on a cron schedule, with your own model key if you like."
+company: "GitHub"
+proof: vendor
+url: https://docs.github.com/en/copilot/how-tos/copilot-cli/automate-copilot-cli/automate-with-actions
+runtime: [cloud]
+agent: [copilot-cli]
+workflow: [github-actions]
+scheduler: [github-actions-cron]
+models: [openai, claude, gemini, any-openai-compatible]

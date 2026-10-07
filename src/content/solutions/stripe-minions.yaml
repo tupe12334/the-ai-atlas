@@ -1,0 +1,9 @@
+name: "Stripe Minions"
+summary: "Unattended one-shot agents, mostly started from Slack, run in devboxes and open PRs that pass CI. Built on a fork of goose. Over a thousand merged PRs a week."
+company: "Stripe"
+proof: in-production
+url: https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents
+sources: [https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents-part-2]
+runtime: [on-prem]
+agent: [goose]
+workflow: [slack]

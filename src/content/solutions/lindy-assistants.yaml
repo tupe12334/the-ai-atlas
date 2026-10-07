@@ -1,0 +1,7 @@
+name: "Lindy assistants"
+summary: "No-code assistants for email, meetings and CRM, on schedules or app triggers."
+company: "Lindy"
+proof: vendor
+url: https://docs.lindy.ai
+runtime: [cloud]
+agent: [lindy]
