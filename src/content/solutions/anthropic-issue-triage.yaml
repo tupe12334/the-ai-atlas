@@ -1,0 +1,11 @@
+name: "Anthropic issue triage for Claude Code"
+summary: "GitHub Actions run Claude Code to triage and dedupe new issues in the claude-code repo, and sweep the backlog twice a day."
+company: "Anthropic"
+proof: in-production
+url: https://github.com/anthropics/claude-code/tree/main/.github/workflows
+sources: [https://claude.com/blog/how-anthropic-teams-use-claude-code]
+runtime: [cloud]
+agent: [claude-code]
+workflow: [github-actions]
+scheduler: [github-actions-cron]
+models: [claude]

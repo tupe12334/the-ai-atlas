@@ -1,0 +1,10 @@
+name: "Windmill AI agent steps"
+summary: "Self-host Windmill and add AI agent steps to scheduled flows."
+company: "Windmill"
+proof: vendor
+url: https://www.windmill.dev/docs/core_concepts/ai_agents
+runtime: [on-prem, cloud]
+agent: [workflow-ai-step]
+workflow: [windmill]
+scheduler: [windmill-schedules]
+models: [openai, claude, mistral, deepseek, gemini]

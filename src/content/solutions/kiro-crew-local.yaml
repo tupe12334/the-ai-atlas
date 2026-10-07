@@ -1,0 +1,9 @@
+name: "Kiro Crew on your machine"
+summary: "A persistent personal agent with cron jobs, webhooks and chat apps, on your own machine."
+company: "Amazon"
+proof: vendor
+url: https://kiro.dev/docs/crew/
+runtime: [on-prem]
+agent: [kiro-crew]
+workflow: [slack, msteams]
+scheduler: [kiro-crew-cron]

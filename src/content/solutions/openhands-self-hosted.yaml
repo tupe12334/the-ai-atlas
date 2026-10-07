@@ -1,0 +1,8 @@
+name: "OpenHands self-hosted with local models"
+summary: "Self-host OpenHands and point it at a local model server such as Ollama or vLLM."
+company: "All Hands AI"
+proof: vendor
+url: https://docs.openhands.dev/openhands/usage/llms/llms
+runtime: [on-prem]
+agent: [openhands]
+models: [local-models]

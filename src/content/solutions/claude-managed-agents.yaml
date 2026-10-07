@@ -1,0 +1,8 @@
+name: "Claude Managed Agents"
+summary: "Anthropic hosts the agent loop. The sandbox runs in Anthropic's cloud or yours."
+company: "Anthropic"
+proof: vendor
+url: https://platform.claude.com/docs/en/managed-agents/overview
+runtime: [cloud, on-prem]
+agent: [claude-managed-agents]
+models: [claude]

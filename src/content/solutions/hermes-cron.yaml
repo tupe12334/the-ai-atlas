@@ -1,5 +1,7 @@
 name: Hermes with its built-in cron
 summary: Self-host Hermes Agent on a server and use its own scheduler for recurring tasks.
+company: Nous Research
+proof: vendor
 url: https://github.com/NousResearch/hermes-agent
 runtime: [on-prem, cloud]
 agent: [hermes]

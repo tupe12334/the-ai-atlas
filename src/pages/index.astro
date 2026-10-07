@@ -4,6 +4,10 @@ import Base from "../layouts/Base.astro";
 import { base, layers as facetKeys, parts, solutions } from "../catalog";
 import { stackBuild } from "../builds";
 
+const proofs = [
+  ["in-production", "Runs in production"],
+  ["vendor", "Vendor template"],
+] as const;
 const options = Object.fromEntries(
   facetKeys.map((key) => [
     key,
@@ -158,6 +162,21 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       .stack h2 a { text-decoration: none; }
       .stack h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
       .stack p { margin: 0.5rem 0 1.25rem; color: var(--muted); }
+      .byline { margin: 0 0 0.35rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+      .byline.in-production { color: var(--runtime); }
+      .stack .sources { margin: 0.75rem 0 0; font-size: 0.85rem; }
+      .proof { --layer: var(--ink); }
+      .search { display: grid; gap: 0.35rem; font-weight: 800; font-stretch: 112%; }
+      .search input {
+        font: inherit;
+        font-weight: 400;
+        color: var(--ink);
+        background: var(--sheet);
+        border: 1.5px solid var(--muted);
+        border-radius: 0.375rem;
+        padding: 0.4rem 0.6rem;
+        width: 100%;
+      }
       .customize { margin-top: 1rem; font-weight: 700; font-size: 0.95rem; }
       .cta { display: inline-block; margin-top: 1.5rem; font-weight: 800; font-stretch: 112%; font-size: 1.1rem; }
 
@@ -176,6 +195,15 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       <details class="panel" open>
       <summary>Filter stacks</summary>
       <form id="filters" class="legend" aria-label="Filter stacks">
+        <label class="search">Search companies and stacks<input type="search" name="q" autocomplete="off" placeholder="Stripe, Devin, migration…" /></label>
+        <fieldset class="proof">
+          <legend>Proof</legend>
+          <div class="options">
+            {proofs.map(([value, label]) => (
+              <label class="option"><input type="checkbox" name="proof" value={value} />{label}</label>
+            ))}
+          </div>
+        </fieldset>
         {facetKeys.map((key) => (
           <fieldset class={key}>
             <legend>{facets[key]}</legend>
@@ -196,7 +224,8 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
         <ul id="results">
           {solutions.map((data) => (
-            <li class="stack" data-facets={JSON.stringify(data.stack)}>
+            <li class="stack" data-facets={JSON.stringify({ ...data.stack, proof: [data.proof] })} data-text={[data.name, data.company, data.summary, ...facetKeys.flatMap((k) => data[k].map((id) => parts[id].name))].join(" ").toLowerCase()}>
+              <p class:list={["byline", data.proof]}>{data.proof === "in-production" ? `Runs at ${data.company}` : `Template by ${data.company}`}</p>
               <h2><a href={data.url}>{data.name}</a></h2>
               <p>{data.summary}</p>
               <ul class="route" aria-label="Stack layers">
@@ -207,7 +236,10 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
                   </li>
                 ))}
               </ul>
-              <a class="customize" href={`${base}/build/?${new URLSearchParams(stackBuild(data.stack))}`}>Customize this build</a>
+              {data.sources.length > 0 && (
+                <p class="sources">More sources: {data.sources.map((u, i) => <>{i > 0 && ", "}<a href={u}>{new URL(u).hostname.replace(/^www\./, "")}</a></>)}</p>
+              )}
+              <a class="customize" href={`${base}/build/?${new URLSearchParams(stackBuild(data.stack, parts))}`}>Customize this build</a>
             </li>
           ))}
         </ul>
@@ -220,6 +252,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       const stacks = new Map(
         items.map((item) => [item, JSON.parse(item.dataset.facets!) as Record<string, string[]>]),
       );
+      const texts = new Map([...stacks].map(([item, facets]) => [facets, item.dataset.text!]));
       const count = document.querySelector("#count")!;
       const empty = document.querySelector<HTMLElement>("#empty")!;
       const clear = document.querySelector<HTMLElement>("button[type=reset]")!;
@@ -227,11 +260,15 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       function apply() {
         const params = new URLSearchParams();
         const checked: Record<string, string[]> = {};
+        const q = String(new FormData(form).get("q") ?? "").trim();
+        if (q) params.set("q", q);
         for (const [key, value] of new FormData(form)) {
+          if (key === "q") continue;
           (checked[key] ??= []).push(String(value));
           params.append(key, String(value));
         }
         const matches = (facets: Record<string, string[]>, skip?: string) =>
+          texts.get(facets)!.includes(q.toLowerCase()) &&
           Object.entries(checked).every(
             ([key, values]) => key === skip || values.some((v) => facets[key].includes(v)),
           );
@@ -245,7 +282,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         // Checked options stay visible so they can be unchecked.
         for (const fieldset of form.querySelectorAll("fieldset")) {
           let available = 0;
-          for (const input of fieldset.querySelectorAll<HTMLInputElement>("input")) {
+          for (const input of fieldset.querySelectorAll<HTMLInputElement>("input[type=checkbox]")) {
             const reachable =
               input.checked ||
               [...stacks.values()].some(
@@ -266,14 +303,17 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
 
       // Restore filters from the URL so a filtered view can be shared.
       const initial = new URLSearchParams(location.search);
-      for (const input of form.querySelectorAll<HTMLInputElement>("input")) {
+      for (const input of form.querySelectorAll<HTMLInputElement>("input[type=checkbox]")) {
         input.checked = initial.getAll(input.name).includes(input.value);
       }
+      form.querySelector<HTMLInputElement>("input[name=q]")!.value = initial.get("q") ?? "";
       // Keep the filter panel open on wide screens; fold it away on phones.
       if (!matchMedia("(min-width: 60rem)").matches) {
         document.querySelector<HTMLDetailsElement>("details.panel")!.open = initial.size > 0;
       }
       form.addEventListener("change", apply);
+      form.addEventListener("input", apply);
+      form.addEventListener("submit", (e) => e.preventDefault());
       // "reset" fires before the inputs clear, so apply on the next tick.
       form.addEventListener("reset", () => setTimeout(apply));
       apply();

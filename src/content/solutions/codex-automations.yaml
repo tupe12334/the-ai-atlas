@@ -1,0 +1,9 @@
+name: "Codex automations"
+summary: "Schedule Codex tasks in the desktop app or on the web."
+company: "OpenAI"
+proof: vendor
+url: https://learn.chatgpt.com/docs/automations?surface=app
+runtime: [on-prem, cloud]
+agent: [codex]
+scheduler: [codex-automations]
+models: [openai]

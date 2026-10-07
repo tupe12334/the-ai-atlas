@@ -1,0 +1,10 @@
+name: "Make AI agents"
+summary: "Visual scenarios with an AI Agent step, on Make's schedule."
+company: "Make"
+proof: vendor
+url: https://help.make.com/introduction-to-make-ai-agent-new
+runtime: [cloud]
+agent: [workflow-ai-step]
+workflow: [make]
+scheduler: [make-scheduling]
+models: [openai, claude, gemini]

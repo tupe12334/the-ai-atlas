@@ -1,0 +1,9 @@
+name: "Claude Desktop scheduled tasks"
+summary: "Schedule Claude Code tasks in the desktop app. They run on your machine with your files."
+company: "Anthropic"
+proof: vendor
+url: https://code.claude.com/docs/en/desktop-scheduled-tasks
+runtime: [on-prem]
+agent: [claude-code]
+scheduler: [claude-desktop-scheduled-tasks]
+models: [claude]

@@ -1,0 +1,9 @@
+name: "LangGraph on LangSmith Deployment"
+summary: "Deploy a LangGraph agent and run it on cron jobs from the Agent Server."
+company: "LangChain"
+proof: vendor
+url: https://docs.langchain.com/langsmith/deployments
+runtime: [cloud, on-prem]
+agent: [langgraph]
+scheduler: [langgraph-cron]
+models: [openai, claude, local-models]

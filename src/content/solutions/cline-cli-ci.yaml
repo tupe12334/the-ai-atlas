@@ -1,0 +1,9 @@
+name: "Cline headless in CI"
+summary: "Run the Cline CLI headless in GitHub Actions with your own model provider."
+company: "Cline"
+proof: vendor
+url: https://docs.cline.bot/
+runtime: [cloud]
+agent: [cline]
+workflow: [github-actions]
+models: [claude, openai, gemini, any-openai-compatible]

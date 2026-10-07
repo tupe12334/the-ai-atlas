@@ -1,0 +1,10 @@
+name: "Intercom Claude Code platform"
+summary: "Claude Code with internal plugins and skills on developer machines, plus a weekly GitHub Actions job that fact-checks CLAUDE.md files."
+company: "Intercom"
+proof: in-production
+url: https://ideas.fin.ai/p/how-we-use-claude-code-today-at-intercom
+runtime: [on-prem]
+agent: [claude-code]
+workflow: [github-actions]
+scheduler: [github-actions-cron]
+models: [claude]

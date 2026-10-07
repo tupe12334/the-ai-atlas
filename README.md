@@ -7,11 +7,11 @@ Design your own AI solution piece by piece, with confidence that the pieces work
 
 ## Add a part or a compatibility rule
 
-Edit [`src/content/parts.yaml`](src/content/parts.yaml). A part's `needs` say which parts of another layer it works with, and why.
+Edit [`src/content/parts.yaml`](src/content/parts.yaml). A part's `needs` say which parts of another layer it works with, and why. Give each need a `source` link that backs it.
 
 ## Add a stack
 
-Add one YAML file to [`src/content/solutions/`](src/content/solutions/). It lists part ids from `parts.yaml`. The fields are in the schema in [`src/content.config.ts`](src/content.config.ts). The build fails if an entry does not match the schema, uses an unknown part, or breaks a compatibility rule ([`src/builds.ts`](src/builds.ts)).
+Add one YAML file to [`src/content/solutions/`](src/content/solutions/). It lists part ids from `parts.yaml`, the `company` behind it, and its `proof`: `in-production` when the company says publicly that it runs the stack, or `vendor` for a setup the vendor documents. Link the write-up or docs in `url`, and add more links in `sources`. A layer the source does not name stays empty. The fields are in the schema in [`src/content.config.ts`](src/content.config.ts). The build fails if an entry does not match the schema, uses an unknown part, or breaks a compatibility rule ([`src/builds.ts`](src/builds.ts)).
 
 ## Develop
 

@@ -1,0 +1,8 @@
+name: "Vercel d0 data agent"
+summary: "Slack agent built with the AI SDK writes read-only SQL against Snowflake to answer data questions."
+company: "Vercel"
+proof: in-production
+url: https://vercel.com/go/vercel-d0-agent
+runtime: [cloud]
+agent: [in-house-agent]
+workflow: [slack]

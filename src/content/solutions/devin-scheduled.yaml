@@ -1,0 +1,9 @@
+name: "Devin from Slack with scheduled sessions"
+summary: "Ask Devin in Slack, Linear or Jira, or schedule sessions on a cron. Devin opens PRs from Cognition's cloud."
+company: "Cognition"
+proof: vendor
+url: https://docs.devin.ai/product-guides/scheduled-sessions
+runtime: [cloud]
+agent: [devin]
+workflow: [slack, linear, jira]
+scheduler: [devin-scheduled-sessions]

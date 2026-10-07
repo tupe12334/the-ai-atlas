@@ -1,0 +1,7 @@
+name: "Uber uReview"
+summary: "Multi-stage AI reviewer in CI comments on most of Uber's diffs. Claude writes the comments and an OpenAI model grades them."
+company: "Uber"
+proof: in-production
+url: https://www.uber.com/blog/ureview/
+agent: [in-house-agent]
+models: [claude, openai]

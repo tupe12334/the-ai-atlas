@@ -1,0 +1,10 @@
+name: "Airflow with common.ai"
+summary: "Airflow 3 DAGs with LLM and agent operators from the common.ai provider."
+company: "Apache Software Foundation"
+proof: vendor
+url: https://airflow.apache.org/blog/common-ai-provider/
+runtime: [on-prem, cloud]
+agent: [workflow-ai-step]
+workflow: [airflow]
+scheduler: [airflow-schedule]
+models: [openai, claude, gemini, local-models]

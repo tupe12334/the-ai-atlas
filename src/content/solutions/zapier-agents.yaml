@@ -1,5 +1,7 @@
 name: Zapier Agents
 summary: Hosted agents that act across the apps you connect to Zapier.
+company: Zapier
+proof: vendor
 url: https://zapier.com/agents
 runtime: [cloud]
 agent: [zapier-agents]

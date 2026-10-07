@@ -1,0 +1,10 @@
+name: "Warp cloud agents on a schedule"
+summary: "Run Warp agents hosted or self-hosted, from Slack or Linear or on a schedule."
+company: "Warp"
+proof: vendor
+url: https://docs.warp.dev/agent-platform/cloud-agents/overview
+runtime: [cloud, on-prem]
+agent: [warp-cloud-agents]
+workflow: [slack, linear]
+scheduler: [warp-schedules]
+models: [claude, openai]

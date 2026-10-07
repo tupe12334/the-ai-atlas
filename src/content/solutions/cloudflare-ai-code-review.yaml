@@ -1,0 +1,8 @@
+name: "Cloudflare AI Code Review"
+summary: "A coordinator and up to seven specialist OpenCode reviewers run on every merge request from GitLab CI."
+company: "Cloudflare"
+proof: in-production
+url: https://blog.cloudflare.com/ai-code-review
+agent: [opencode]
+workflow: [gitlab-ci]
+models: [claude, openai, kimi]

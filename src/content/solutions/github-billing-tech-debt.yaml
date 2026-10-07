@@ -1,0 +1,7 @@
+name: "GitHub billing team tech-debt burn-down"
+summary: "The team writes tech-debt issues and assigns them to Copilot coding agent, then reviews the PRs."
+company: "GitHub"
+proof: in-production
+url: https://github.blog/ai-and-ml/github-copilot/how-the-github-billing-team-uses-the-coding-agent-in-github-copilot-to-continuously-burn-down-technical-debt/
+runtime: [cloud]
+agent: [copilot-coding-agent]

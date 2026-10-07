@@ -1,0 +1,7 @@
+name: "Coinbase Forge"
+summary: "In-house background agent turns bug reports from Slack and Linear into PRs, then posts them back to Slack for review."
+company: "Coinbase"
+proof: in-production
+url: https://linear.app/customers/coinbase
+agent: [in-house-agent]
+workflow: [slack, linear]

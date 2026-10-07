@@ -1,0 +1,8 @@
+name: "Continue agents"
+summary: "Open-source agents in the IDE and CLI, with any model provider, local ones included."
+company: "Continue"
+proof: vendor
+url: https://docs.continue.dev/
+runtime: [on-prem]
+agent: [continue]
+models: [local-models, claude, openai]

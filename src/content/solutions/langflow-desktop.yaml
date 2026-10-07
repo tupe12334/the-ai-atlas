@@ -1,0 +1,8 @@
+name: "Langflow"
+summary: "Build agent flows visually, on your machine or in the cloud."
+company: "Langflow"
+proof: vendor
+url: https://docs.langflow.org
+runtime: [on-prem, cloud]
+agent: [langflow]
+models: [local-models, openai, claude]

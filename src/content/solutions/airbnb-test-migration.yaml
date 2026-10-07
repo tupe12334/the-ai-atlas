@@ -1,0 +1,6 @@
+name: "Airbnb test migration pipeline"
+summary: "Per-file state machine with LLM retry loops migrated about 3,500 test files from Enzyme to React Testing Library in six weeks."
+company: "Airbnb"
+proof: in-production
+url: https://airbnb.tech/?p=366
+agent: [in-house-agent]

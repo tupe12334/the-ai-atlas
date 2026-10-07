@@ -1,5 +1,7 @@
 name: Claude Code in GitHub Actions
 summary: Run Claude Code from GitHub workflows, on events or on a cron schedule.
+company: Anthropic
+proof: vendor
 url: https://github.com/anthropics/claude-code-action
 runtime: [cloud]
 agent: [claude-code]

@@ -1,0 +1,8 @@
+name: "ServiceNow AI agents"
+summary: "Agents in the ServiceNow AI Platform that work on IT and service workflows."
+company: "ServiceNow"
+proof: vendor
+url: https://www.servicenow.com/docs/r/intelligent-experiences/na-ai-agents.html
+runtime: [cloud]
+agent: [servicenow-ai-agents]
+models: [openai]

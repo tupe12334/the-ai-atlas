@@ -1,0 +1,9 @@
+name: "OpenCode in GitHub Actions"
+summary: "Run OpenCode in GitHub workflows with any of 75+ providers."
+company: "OpenCode"
+proof: vendor
+url: https://opencode.ai/docs/
+runtime: [cloud]
+agent: [opencode]
+workflow: [github-actions]
+models: [claude, openai, any-openai-compatible]

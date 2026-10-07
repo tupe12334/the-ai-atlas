@@ -1,0 +1,10 @@
+name: "GitLab Duo Agent Platform"
+summary: "Duo agent flows run in GitLab pipelines, on merge requests or pipeline schedules, on GitLab.com or self-managed."
+company: "GitLab"
+proof: vendor
+url: https://docs.gitlab.com/user/duo_agent_platform/
+runtime: [cloud, on-prem]
+agent: [gitlab-duo]
+workflow: [gitlab-ci]
+scheduler: [gitlab-pipeline-schedules]
+models: [claude]

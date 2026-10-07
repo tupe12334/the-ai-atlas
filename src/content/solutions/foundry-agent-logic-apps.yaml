@@ -1,0 +1,10 @@
+name: "Foundry agent in Logic Apps"
+summary: "Host an agent in Foundry Agent Service and wire it into Azure Logic Apps workflows."
+company: "Microsoft"
+proof: vendor
+url: https://learn.microsoft.com/en-us/azure/logic-apps/agent-workflows-concepts
+sources: [https://learn.microsoft.com/en-us/azure/foundry/agents/overview]
+runtime: [cloud]
+agent: [azure-foundry-agent-service]
+workflow: [azure-logic-apps]
+models: [openai]

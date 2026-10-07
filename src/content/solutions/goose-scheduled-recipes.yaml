@@ -1,0 +1,9 @@
+name: "Goose with scheduled recipes"
+summary: "Run Goose locally and schedule recipes with cron, with any model provider."
+company: "Linux Foundation AAIF"
+proof: vendor
+url: https://github.com/aaif-goose/goose
+runtime: [on-prem]
+agent: [goose]
+scheduler: [goose-schedule]
+models: [claude, openai, gemini, local-models]

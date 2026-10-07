@@ -1,0 +1,7 @@
+name: "Cursor Bugbot review"
+summary: "Bugbot reviews every pull request and flags bugs before merge."
+company: "Cursor"
+proof: vendor
+url: https://cursor.com/docs/bugbot
+runtime: [cloud]
+agent: [cursor-bugbot]

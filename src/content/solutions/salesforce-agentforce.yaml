@@ -1,0 +1,8 @@
+name: "Agentforce in Salesforce"
+summary: "CRM agents that work on Salesforce data, with Salesforce's default models or your own through Einstein Studio."
+company: "Salesforce"
+proof: vendor
+url: https://www.salesforce.com/agentforce/
+runtime: [cloud]
+agent: [salesforce-agentforce]
+models: [openai, claude]

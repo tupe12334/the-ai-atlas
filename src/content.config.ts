@@ -23,7 +23,9 @@ const parts = defineCollection({
     name: z.string(),
     summary: z.string(),
     url: z.url({ protocol: /^https$/ }).optional(),
-    needs: z.array(z.strictObject({ parts: z.array(partId).min(1), why: z.string() })).default([]),
+    needs: z
+      .array(z.strictObject({ parts: z.array(partId).min(1), why: z.string(), source: z.url({ protocol: /^https$/ }).optional() }))
+      .default([]),
   }),
 });
 
@@ -34,8 +36,14 @@ const solutions = defineCollection({
   schema: z.strictObject({
     name: z.string(),
     summary: z.string(),
+    // The company behind the stack: the vendor for a template, the user for a stack seen in production.
+    company: z.string(),
+    // "vendor": the vendor documents this setup. "in-production": the company says publicly that it runs it.
+    proof: z.enum(["vendor", "in-production"]),
+    // Where the claims come from. The first link is the main one.
     url: z.url({ protocol: /^https$/ }),
-    runtime: z.array(partId).min(1),
+    sources: z.array(z.url({ protocol: /^https$/ })).default([]),
+    runtime: z.array(partId).default([]),
     agent: z.array(partId).min(1),
     workflow: z.array(partId).default([]),
     scheduler: z.array(partId).default([]),

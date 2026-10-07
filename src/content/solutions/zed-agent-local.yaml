@@ -1,0 +1,8 @@
+name: "Zed agent panel"
+summary: "The Zed editor's agent, or external agents such as Claude Code and Codex through ACP."
+company: "Zed Industries"
+proof: vendor
+url: https://zed.dev/docs/ai/external-agents
+runtime: [on-prem]
+agent: [zed-agent]
+models: [claude, openai, local-models]

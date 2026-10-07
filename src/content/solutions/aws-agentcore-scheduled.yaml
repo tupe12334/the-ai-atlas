@@ -1,0 +1,11 @@
+name: "AgentCore agent on a schedule"
+summary: "Run an agent on Bedrock AgentCore and start it from EventBridge Scheduler through Step Functions."
+company: "Amazon"
+proof: vendor
+url: https://docs.aws.amazon.com/step-functions/latest/dg/using-eventbridge-scheduler.html
+sources: [https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html]
+runtime: [cloud]
+agent: [bedrock-agentcore]
+workflow: [aws-step-functions]
+scheduler: [aws-eventbridge-scheduler]
+models: [claude, openai, llama, mistral]

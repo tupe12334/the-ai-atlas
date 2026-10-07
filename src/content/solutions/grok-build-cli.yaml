@@ -1,0 +1,8 @@
+name: "Grok Build in the terminal"
+summary: "xAI's terminal agent, interactive or headless for scripts."
+company: "xAI"
+proof: vendor
+url: https://docs.x.ai/build/overview
+runtime: [on-prem]
+agent: [grok-build]
+models: [grok]

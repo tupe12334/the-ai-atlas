@@ -1,0 +1,8 @@
+name: "OpenAI harness engineering"
+summary: "Codex agents wrote an internal product of about a million lines. Humans steer, and agents write every line."
+company: "OpenAI"
+proof: in-production
+url: https://openai.com/index/harness-engineering/
+sources: [https://www.infoq.com/news/2026/02/openai-harness-engineering-codex]
+agent: [codex]
+models: [openai]

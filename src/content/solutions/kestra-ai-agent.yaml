@@ -1,0 +1,10 @@
+name: "Kestra AI agent task"
+summary: "YAML flows with an AI agent task, on cron triggers with backfill."
+company: "Kestra"
+proof: vendor
+url: https://kestra.io/plugins/plugin-ai
+runtime: [on-prem, cloud]
+agent: [workflow-ai-step]
+workflow: [kestra]
+scheduler: [kestra-schedule]
+models: [claude, openai, gemini, local-models, mistral, deepseek]

@@ -1,0 +1,10 @@
+name: "Gemini CLI in GitHub Actions"
+summary: "Run Gemini CLI from GitHub workflows with run-gemini-cli, on events or on a schedule."
+company: "Google"
+proof: vendor
+url: https://github.com/google-github-actions/run-gemini-cli
+runtime: [cloud]
+agent: [gemini-cli]
+workflow: [github-actions]
+scheduler: [github-actions-cron]
+models: [gemini]

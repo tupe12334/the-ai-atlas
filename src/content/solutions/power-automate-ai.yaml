@@ -1,0 +1,10 @@
+name: "Power Automate with AI prompts"
+summary: "Scheduled cloud flows call Azure OpenAI prompts and Copilot Studio agents."
+company: "Microsoft"
+proof: vendor
+url: https://learn.microsoft.com/power-automate/triggers-introduction
+runtime: [cloud]
+agent: [copilot-studio]
+workflow: [power-automate]
+scheduler: [power-automate-recurrence]
+models: [openai]

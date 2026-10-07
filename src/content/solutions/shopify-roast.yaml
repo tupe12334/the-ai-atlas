@@ -1,0 +1,7 @@
+name: "Shopify Roast"
+summary: "Open-source Ruby framework for structured AI workflows in YAML, with a Claude Code step for coding work."
+company: "Shopify"
+proof: in-production
+url: https://shopify.engineering/introducing-roast
+agent: [claude-code]
+models: [claude]

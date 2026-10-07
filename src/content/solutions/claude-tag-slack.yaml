@@ -1,0 +1,10 @@
+name: "Claude Tag in Slack"
+summary: "Mention Claude in a Slack channel or give it scheduled jobs. It works in an Anthropic sandbox."
+company: "Anthropic"
+proof: vendor
+url: https://claude.com/docs/claude-tag/overview
+runtime: [cloud]
+agent: [claude-tag]
+workflow: [slack]
+scheduler: [claude-tag-scheduled-jobs]
+models: [claude]

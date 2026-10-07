@@ -1,0 +1,8 @@
+name: "Mistral Vibe with local Devstral"
+summary: "Run Mistral Vibe offline against a local model, or against Mistral's API."
+company: "Mistral AI"
+proof: vendor
+url: https://docs.mistral.ai/mistral-vibe/overview
+runtime: [on-prem]
+agent: [mistral-vibe]
+models: [local-models, mistral]

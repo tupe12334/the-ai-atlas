@@ -1,0 +1,8 @@
+name: "Qwen Code"
+summary: "Alibaba's terminal agent with Qwen models, from Alibaba Cloud or run locally."
+company: "Alibaba"
+proof: vendor
+url: https://qwenlm.github.io/qwen-code-docs/en/
+runtime: [on-prem]
+agent: [qwen-code]
+models: [qwen, local-models]

@@ -1,5 +1,7 @@
 name: n8n AI agent workflows
 summary: Build agent steps into n8n workflows with its AI Agent node. Self-host it or use n8n Cloud.
+company: n8n
+proof: vendor
 url: https://docs.n8n.io/build/integrate-ai
 runtime: [on-prem, cloud]
 agent: [n8n-ai-agent]

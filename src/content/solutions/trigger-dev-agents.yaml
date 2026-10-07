@@ -1,0 +1,9 @@
+name: "Trigger.dev agent tasks"
+summary: "TypeScript agent tasks with retries, on cron schedules, self-hosted or on Trigger.dev Cloud."
+company: "Trigger.dev"
+proof: vendor
+url: https://trigger.dev/docs
+runtime: [on-prem, cloud]
+agent: [workflow-ai-step]
+workflow: [trigger-dev]
+scheduler: [trigger-dev-schedules]

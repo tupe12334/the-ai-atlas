@@ -6,6 +6,9 @@ import { stackBuild } from "../builds";
 
 // A build is not complete without these. The other layers are optional.
 const required = ["runtime", "agent"];
+// Every proven stack as a starting point, grouped by the company behind it.
+const companies = Object.entries(Object.groupBy(solutions, (s) => s.company)).sort(([a], [b]) => a.localeCompare(b));
+const starterLink = (s: (typeof solutions)[number]) => `?${new URLSearchParams({ ...stackBuild(s.stack, parts), name: s.name })}`;
 const catalog = {
   parts,
   stacks: solutions.map(({ id, name, stack }) => ({ id, name, stack })),
@@ -26,18 +29,9 @@ const catalog = {
       letter-spacing: -0.02em;
     }
     .lead { max-width: 40rem; margin: 1rem 0 0; font-size: 1.15rem; color: var(--muted); }
-    .starters { margin-top: 1.5rem; }
-    .starters h2 { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 800; font-stretch: 112%; }
-    .starters ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.375rem; }
-    .starters a {
-      display: inline-block;
-      padding: 0.25rem 0.7rem;
-      border: 1.5px solid var(--rule);
-      border-radius: 999px;
-      font-size: 0.9rem;
-      text-decoration: none;
-    }
-    .starters a:hover { border-color: var(--ink); }
+    .starters { margin-top: 1.5rem; max-width: 34rem; }
+    .starters label { display: grid; gap: 0.35rem; font-weight: 800; font-stretch: 112%; }
+    .starters p { margin: 0.35rem 0 0; font-size: 0.9rem; color: var(--muted); }
 
     .builder {
       max-width: 76rem;
@@ -184,14 +178,21 @@ const catalog = {
   <header class="intro">
     <h1>Build your own</h1>
     <p class="lead">Pick parts one layer at a time. Each pick narrows what fits next. The build sheet checks that your parts work together and tells you why when they do not.</p>
-    <nav class="starters" aria-labelledby="starters-title">
-      <h2 id="starters-title">Or start from a proven stack and change it</h2>
-      <ul>
-        {solutions.map((s) => (
-          <li><a href={`?${new URLSearchParams({ ...stackBuild(s.stack), name: s.name })}`}>{s.name}</a></li>
-        ))}
-      </ul>
-    </nav>
+    <div class="starters">
+      <label>Or start from a proven stack and change it
+        <select id="starter">
+          <option value="">Pick a company's stack</option>
+          {companies.map(([company, list]) => (
+            <optgroup label={company}>
+              {list!.map((s) => (
+                <option value={starterLink(s)}>{s.name}{s.proof === "in-production" ? " (runs in production)" : ""}</option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+      <p>{solutions.length} stacks from {companies.length} companies. Picking one replaces your current build.</p>
+    </div>
   </header>
 
   <form id="build" class="builder" aria-label="Your build">
@@ -203,7 +204,7 @@ const catalog = {
             {!required.includes(layer) && <span class="optional">(optional)</span>}
           </legend>
           <div class="parts">
-            {Object.values(parts).filter((p) => p.layer === layer).map((p) => (
+            {Object.values(parts).filter((p) => p.layer === layer).sort((a, b) => a.name.localeCompare(b.name)).map((p) => (
               <label class="part">
                 <input type="radio" name={layer} value={p.id} aria-labelledby={`n-${p.id}`} aria-describedby={`s-${p.id} t-${p.id}`} />
                 <span class="name" id={`n-${p.id}`}>{p.name}</span>
@@ -553,6 +554,12 @@ const catalog = {
     // "reset" fires before the inputs clear, so apply on the next tick.
     form.addEventListener("reset", () => setTimeout(() => (say(""), apply())));
     compare.addEventListener("change", renderCompare);
+    const starter = document.querySelector<HTMLSelectElement>("#starter")!;
+    // Back to this page restores the old menu choice; clear it so picking it again works.
+    addEventListener("pageshow", () => (starter.value = ""));
+    starter.addEventListener("change", () => {
+      if (starter.value) location.href = starter.value;
+    });
     for (const toggle of form.querySelectorAll<HTMLButtonElement>(".show-misfits")) {
       toggle.addEventListener("click", () => {
         const layer = toggle.closest("fieldset")!.className as Layer;
