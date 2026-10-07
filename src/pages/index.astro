@@ -45,6 +45,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         --scheduler: #8a5d00;
         --models: #7c3fd8;
         --contour: #13233f;
+        --edge: #13233f;
       }
       @media (prefers-color-scheme: dark) {
         :root {
@@ -58,6 +59,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
           --scheduler: #f0b440;
           --models: #b48cff;
           --contour: #e6ece8;
+          --edge: #3b4f70;
         }
       }
       * { box-sizing: border-box; }
@@ -76,7 +78,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       .hero {
         position: relative;
         overflow: hidden;
-        border-bottom: 2px solid var(--ink);
+        border-bottom: 2px solid var(--edge);
       }
       .hero svg {
         position: absolute;
@@ -86,6 +88,9 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         color: var(--contour);
         opacity: 0.16;
         pointer-events: none;
+      }
+      @media (max-width: 60rem) {
+        .hero svg { opacity: 0.09; }
       }
       .hero-inner {
         position: relative;
@@ -247,6 +252,8 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       .route li:last-child { padding-bottom: 0; }
       .route .layer { color: var(--muted); }
       .route .values { font-weight: 600; }
+      .route .unlisted .values { font-weight: 400; color: var(--muted); }
+      .route .unlisted::before { border-style: dotted; }
 
       [hidden] { display: none !important; }
       .runtime { --layer: var(--runtime); }
@@ -301,10 +308,10 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
               <h2><a href={data.url}>{data.name}</a></h2>
               <p>{data.summary}</p>
               <ul class="route" aria-label="Stack layers">
-                {facetKeys.filter((k) => data[k].length > 0).map((k, i, layers) => (
-                  <li class={k} style={layers[i + 1] && `--next-layer: var(--${layers[i + 1]})`}>
+                {facetKeys.map((k, i) => (
+                  <li class:list={[k, { unlisted: data[k].length === 0 }]} style={facetKeys[i + 1] && `--next-layer: var(--${facetKeys[i + 1]})`}>
                     <span class="layer">{facets[k]}</span>
-                    <span class="values">{data[k].join(", ")}</span>
+                    <span class="values">{data[k].join(", ") || "Not listed"}</span>
                   </li>
                 ))}
               </ul>
@@ -322,6 +329,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       const items = [...document.querySelectorAll<HTMLLIElement>("#results > li")];
       const count = document.querySelector("#count")!;
       const empty = document.querySelector<HTMLElement>("#empty")!;
+      const clear = document.querySelector<HTMLElement>("button[type=reset]")!;
 
       function apply() {
         const params = new URLSearchParams();
@@ -341,6 +349,8 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         }
         count.textContent = `${shown} of ${items.length} stacks`;
         empty.hidden = shown > 0;
+        // visibility, not hidden, so the status row keeps its height.
+        clear.style.visibility = params.size > 0 ? "visible" : "hidden";
         const query = params.toString();
         history.replaceState(null, "", query ? `?${query}` : location.pathname);
       }

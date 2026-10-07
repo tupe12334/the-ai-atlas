@@ -47,3 +47,10 @@ for (const colorScheme of ["light", "dark"] as const) {
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
   });
 }
+
+test("hides Clear filters until a filter is set", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.getByRole("button", { name: "Clear filters" })).toBeHidden();
+  await page.getByLabel("Hermes", { exact: true }).check();
+  await expect(page.getByRole("button", { name: "Clear filters" })).toBeVisible();
+});
