@@ -1,5 +1,5 @@
 name: Zapier Agents
-summary: Hosted agents that act across the apps you connect to Zapier, started from Zapier triggers.
+summary: Hosted agents that act across the apps you connect to Zapier.
 url: https://zapier.com/agents
 runtime: [cloud]
 agent: [Zapier Agents]
