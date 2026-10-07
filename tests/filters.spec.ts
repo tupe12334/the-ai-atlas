@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 const visible = (page: import("@playwright/test").Page) =>
   page.locator("#results > li:visible h2");
@@ -37,3 +38,12 @@ test("shows an empty state and clears filters", async ({ page }) => {
   await expect(page.locator("#count")).toHaveText(/^(\d+) of \1 stacks$/);
   expect(new URL(page.url()).search).toBe("");
 });
+
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`has no WCAG AA violations in ${colorScheme} mode, with filters selected`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("./?runtime=on-prem&runtime=cloud&agent=Hermes&scheduler=Moadim&models=Claude");
+    const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
+  });
+}
