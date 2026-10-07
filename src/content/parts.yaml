@@ -18,15 +18,15 @@ claude-code:
   url: https://code.claude.com/docs
   needs:
     - parts: [claude]
-      why: Claude Code runs Anthropic's Claude models.
+      why: Claude Code officially supports only Anthropic's Claude models.
 codex:
   layer: agent
   name: Codex
   summary: OpenAI's coding agent, as a CLI or in cloud sandboxes.
   url: https://openai.com/codex
   needs:
-    - parts: [openai, local-models]
-      why: Codex runs OpenAI models, or local models with its --oss mode.
+    - parts: [openai, any-openai-compatible, local-models]
+      why: Codex runs OpenAI models, other providers set in its config, or local models with its --oss mode.
 hermes:
   layer: agent
   name: Hermes

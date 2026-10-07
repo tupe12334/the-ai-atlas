@@ -93,6 +93,10 @@ const catalog = {
     .part:hover { border-color: var(--layer); }
     .part input { position: absolute; opacity: 0; width: 1px; height: 1px; }
     .part:has(input:checked) { border-color: var(--layer); box-shadow: inset 0.35rem 0 0 var(--layer); }
+    /* Forced colors drop the shadow, so mark the pick with an outline there. */
+    @media (forced-colors: active) {
+      .part:has(input:checked) { outline: 3px solid Highlight; outline-offset: -3px; }
+    }
     .part:has(input:focus-visible) { outline: 3px solid var(--layer); outline-offset: 2px; }
     .part .name { font-weight: 700; }
     .part .summary { font-size: 0.875rem; color: var(--muted); }
@@ -266,7 +270,7 @@ const catalog = {
   <script type="application/json" id="catalog" set:html={JSON.stringify(catalog)} />
 
   <script>
-    import { conflicts, readBuild, stackHas, type Build, type Parts, type Stack } from "../builds";
+    import { conflicts, gaps, readBuild, stackHas, type Build, type Parts, type Stack } from "../builds";
     import type { Layer } from "../content.config";
 
     type Saved = { name: string; query: string };
@@ -305,7 +309,10 @@ const catalog = {
     const KEY = "the-ai-atlas:builds";
     function loadSaved(): Saved[] {
       try {
-        return JSON.parse(localStorage.getItem(KEY) ?? "[]");
+        const saved: unknown = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+        return Array.isArray(saved)
+          ? saved.filter((s): s is Saved => typeof s?.name === "string" && typeof s?.query === "string")
+          : [];
       } catch {
         return [];
       }
@@ -457,16 +464,23 @@ const catalog = {
         return ul;
       };
       const p = (text: string, className: string) => Object.assign(document.createElement("p"), { textContent: text, className });
-      check.className = problems.length ? "warn" : missing.length ? "" : "ok";
+      const holes = gaps(build, parts);
+      const done = !problems.length && !holes.length && !missing.length;
+      const next: Node[] = [];
       if (problems.length) {
-        check.replaceChildren(
+        next.push(
           p("Some parts do not work together", "verdict"),
           items(problems.map((c) => `${nameOf(c.part)} with ${nameOf(c.other)}: ${c.why}`)),
         );
+      } else if (holes.length) {
+        next.push(
+          p("Some parts need another part", "verdict"),
+          items(holes.map((g) => `${nameOf(g.part)} needs ${g.parts.map(nameOf).join(" or ")}. ${g.why}`)),
+        );
       } else if (missing.length) {
-        check.replaceChildren(p(`No conflicts so far. Pick ${missing.join(" and ")} to finish the build.`, "verdict"));
+        next.push(p(`No conflicts so far. Pick ${missing.join(" and ")} to finish the build.`, "verdict"));
       } else {
-        check.replaceChildren(
+        next.push(
           p("All parts work together", "verdict"),
           p(
             proven.length
@@ -476,25 +490,44 @@ const catalog = {
           ),
         );
       }
+      check.className = problems.length || holes.length ? "warn" : done ? "ok" : "";
+      // Only touch the live region when the verdict changes, so typing a name is not re-announced.
+      if (next.map((n) => n.textContent).join("|") !== [...check.children].map((n) => n.textContent).join("|")) {
+        check.replaceChildren(...next);
+      }
 
       const peek = document.querySelector<HTMLElement>("#peek")!;
       peek.replaceChildren(
         Object.assign(document.createElement("strong"), {
-          textContent: problems.length ? "Some parts do not work together" : missing.length ? "Build in progress" : "All parts work together",
+          textContent: problems.length
+            ? "Some parts do not work together"
+            : holes.length
+              ? "Some parts need another part"
+              : done
+                ? "All parts work together"
+                : "Build in progress",
         }),
         layers.flatMap((l) => (build[l] ? [nameOf(build[l])] : [])).join(" · ") || "No parts picked yet",
       );
 
       const q = query(build, name);
-      history.replaceState(null, "", q ? `?${q}` : location.pathname);
+      const link = `${location.origin}${location.pathname}${q ? `?${q}` : ""}`;
+      try {
+        history.replaceState(null, "", link);
+      } catch {
+        // Safari limits replaceState calls; the copy button uses `link`, so nothing is lost.
+      }
+      shareLink = link;
       const lines = layers.map((l) => `- ${label(l)}: ${build[l] ? nameOf(build[l]) : "not picked"}`);
       const issue = new URLSearchParams({
         title: `Build: ${name || "Untitled build"}`,
-        body: `${location.href}\n\n${lines.join("\n")}\n\n<!-- Do you run this build? Tell us how it works for you. -->\n`,
+        body: `${link}\n\n${lines.join("\n")}\n\n<!-- Do you run this build? Tell us how it works for you. -->\n`,
       });
       document.querySelector<HTMLAnchorElement>("#discuss")!.href = `https://github.com/tupe12334/the-ai-atlas/issues/new?${issue}`;
       renderCompare();
     }
+
+    let shareLink = location.href;
 
     function say(text: string) {
       toast.textContent = text;
@@ -508,6 +541,7 @@ const catalog = {
       input.checked = (restored[layer] ?? "") === input.value;
     }
     nameInput.value = initial.get("name") ?? "";
+    const dropped = layers.filter((l) => initial.has(l) && !restored[l]);
 
     form.addEventListener("change", (e) => {
       if (e.target !== compare) apply();
@@ -526,7 +560,7 @@ const catalog = {
     }
     document.querySelector("#copy")!.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(location.href);
+        await navigator.clipboard.writeText(shareLink);
         say("Link copied. Anyone with the link sees this build.");
       } catch {
         say("Could not copy. Copy the address from the address bar.");
@@ -538,9 +572,13 @@ const catalog = {
       saved.unshift({ name, query: query(readForm(), name) });
       say(storeSaved(saved) ? `Saved "${name}" in this browser.` : "This browser does not allow saving. Copy the link instead.");
       renderSaved();
+      renderCompare();
     });
 
     renderSaved();
     apply();
+    if (dropped.length) {
+      say(`This link named a ${dropped.map(label).join(" and ").toLowerCase()} part that no longer exists. Pick one again.`);
+    }
   </script>
 </Base>

@@ -98,6 +98,23 @@ test("ignores unknown or misplaced parts in a link", async ({ page }) => {
   await page.goto("./build/?runtime=hermes&agent=nope&models=claude");
   await expect(part(page, "Claude")).toBeChecked();
   await expect(page.locator("#build input[name=runtime]:checked")).toHaveCount(0);
+  await expect(page.locator("#toast")).toContainText("named a runtime and agent part that no longer exists");
+});
+
+test("a part that needs a layer you left out is not a finished build", async ({ page }) => {
+  await page.goto("./build/?runtime=cloud&agent=n8n-ai-agent");
+  await expect(check(page)).toContainText("Some parts need another part");
+  await expect(check(page)).toContainText("n8n AI Agent needs n8n. The AI Agent node only runs inside n8n workflows.");
+  await part(page, "n8n").check();
+  await expect(check(page)).toContainText("All parts work together");
+});
+
+test("still works when saved builds in storage are corrupt", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("the-ai-atlas:builds", '{"not":"a list"}'));
+  await page.goto("./build/?runtime=cloud&agent=claude-code&models=claude");
+  await expect(check(page)).toContainText("All parts work together");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.locator("#saved li")).toHaveCount(1);
 });
 
 test("fits a phone screen without horizontal scroll", async ({ page }) => {
@@ -129,6 +146,10 @@ test("the catalog check rejects a proven stack that breaks a rule", () => {
   expect(checkCatalog(parts, { s: { ...stack, agent: ["moadim"] } })).toEqual([
     's: "moadim" is not a agent part in parts.yaml',
   ]);
+  const gappy = { ...parts, hermes: { ...parts.hermes, needs: [{ parts: ["moadim"], why: "Needs a scheduler." }] } };
+  expect(checkCatalog(gappy, { s: { ...stack, runtime: ["on-prem"], scheduler: [] } })).toEqual([
+    "s: hermes needs one of [moadim]: Needs a scheduler.",
+  ]);
   expect(checkCatalog({ ...parts, hermes: { ...parts.hermes, needs: [{ parts: ["x"], why: "" }] } }, {})).toEqual([
     "hermes: needs an unknown part in [x]",
   ]);
@@ -142,6 +163,8 @@ test("on a phone, a bar keeps the build in view while picking", async ({ page })
   await part(page, "Cloud").check();
   await part(page, "Claude Code").check();
   await expect(peek).toBeInViewport();
+  await expect(peek).toContainText("Some parts need another part");
+  await part(page, "Claude").check();
   await expect(peek).toContainText("All parts work together");
-  await expect(peek).toContainText("Cloud · Claude Code");
+  await expect(peek).toContainText("Cloud · Claude Code · Claude");
 });

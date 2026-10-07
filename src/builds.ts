@@ -8,6 +8,8 @@ export type Build = Partial<Record<Layer, string>>;
 /** A proven stack: the part ids it runs with, per layer. */
 export type Stack = Record<Layer, string[]>;
 export type Conflict = { part: string; other: string; why: string };
+/** A part whose needed layer has no pick yet. `parts` lists what would fill it. */
+export type Gap = { part: string; parts: string[]; why: string };
 
 /** Every `needs` rule that the picked parts break. */
 export function conflicts(build: Build, parts: Parts): Conflict[] {
@@ -19,6 +21,15 @@ export function conflicts(build: Build, parts: Parts): Conflict[] {
     }
   }
   return found;
+}
+
+/** Every `needs` rule whose layer has no pick. A need is never met by leaving its layer out. */
+export function gaps(build: Build, parts: Parts): Gap[] {
+  return Object.values(build).flatMap((id) =>
+    parts[id].needs
+      .filter((need) => !build[parts[need.parts[0]].layer])
+      .map((need) => ({ part: id, parts: need.parts, why: need.why })),
+  );
 }
 
 /** True when the stack runs every picked part. */
@@ -59,14 +70,14 @@ export function checkCatalog(parts: Parts, stacks: Record<string, Stack>): strin
   }
   if (errors.length) return errors;
   for (const [name, stack] of Object.entries(stacks)) {
-    for (const [layer, ids] of Object.entries(stack)) {
-      for (const id of ids) {
-        if (parts[id]?.layer !== layer) errors.push(`${name}: "${id}" is not a ${layer} part in parts.yaml`);
-      }
-    }
-    if (errors.length) continue;
+    const unknown = Object.entries(stack).flatMap(([layer, ids]) =>
+      ids.filter((id) => parts[id]?.layer !== layer).map((id) => `${name}: "${id}" is not a ${layer} part in parts.yaml`),
+    );
+    errors.push(...unknown);
+    if (unknown.length) continue;
     for (const build of variants(stack)) {
       for (const c of conflicts(build, parts)) errors.push(`${name}: ${c.part} with ${c.other}: ${c.why}`);
+      for (const g of gaps(build, parts)) errors.push(`${name}: ${g.part} needs one of [${g.parts}]: ${g.why}`);
     }
   }
   return errors;
