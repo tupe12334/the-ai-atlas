@@ -4,7 +4,7 @@ const visible = (page: import("@playwright/test").Page) =>
   page.locator("#results li:visible h2");
 
 test("filters AND across facets, OR within a facet, and round-trip the URL", async ({ page }) => {
-  await page.goto("/?runtime=on-prem&scheduler=Moadim");
+  await page.goto("./?runtime=on-prem&scheduler=Moadim");
   await expect(visible(page)).toHaveText([
     "Claude Code + Moadim on your own machine",
     "Hermes + Moadim on your own machine",
@@ -23,12 +23,12 @@ test("filters AND across facets, OR within a facet, and round-trip the URL", asy
 
 test("fits a phone screen without horizontal scroll", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("./");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test("shows an empty state and clears filters", async ({ page }) => {
-  await page.goto("/?runtime=on-prem&agent=Codex");
+  await page.goto("./?runtime=on-prem&agent=Codex");
   await expect(visible(page)).toHaveCount(0);
   await expect(page.locator("#empty")).toBeVisible();
 

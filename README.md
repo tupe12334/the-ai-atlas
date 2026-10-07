@@ -16,4 +16,4 @@ pnpm test   # build, type-check and browser tests
 
 ## Deploy
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) tests every PR and deploys `main` to the Cloudflare Pages project `theaiatlas`. The deploy is skipped until the `production` environment has the `CLOUDFLARE_API_TOKEN` (Account → Cloudflare Pages → Edit) and `CLOUDFLARE_ACCOUNT_ID` secrets, and the Pages project exists (`wrangler pages project create theaiatlas --production-branch main`).
+Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it tests the site, then deploys it to GitHub Pages at https://tupe12334.github.io/the-ai-atlas/.
