@@ -1,0 +1,102 @@
+---
+import { getCollection } from "astro:content";
+import { facets } from "../content.config";
+
+const solutions = (await getCollection("solutions")).sort((a, b) =>
+  a.data.name.localeCompare(b.data.name),
+);
+const facetKeys = Object.keys(facets) as (keyof typeof facets)[];
+const options = Object.fromEntries(
+  facetKeys.map((key) => [
+    key,
+    [...new Set(solutions.flatMap((s) => s.data[key]))].sort(),
+  ]),
+);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The AI Atlas</title>
+    <meta name="description" content="A catalog of AI development stacks. Filter by runtime, agent, scheduler and models." />
+    <style>
+      :root { color-scheme: light dark; --bg: #fff; --fg: #1a1a1a; --muted: #666; --line: #ddd; --chip: #f1f1f1; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #141414; --fg: #eee; --muted: #999; --line: #333; --chip: #242424; } }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1rem; }
+      h1 { margin: 0; } .lead { color: var(--muted); margin-top: .25rem; }
+      form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+      fieldset { border: 1px solid var(--line); border-radius: .5rem; margin: 0; }
+      legend { font-weight: 600; padding: 0 .25rem; }
+      label { display: block; }
+      ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1rem; }
+      li { border: 1px solid var(--line); border-radius: .5rem; padding: 1rem; }
+      li h2 { font-size: 1.1rem; margin: 0 0 .25rem; } li p { margin: 0 0 .5rem; color: var(--muted); }
+      a { color: inherit; }
+      .chip { display: inline-block; background: var(--chip); border-radius: 1rem; padding: 0 .5rem; margin: .125rem; font-size: .85rem; }
+      [hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>The AI Atlas</h1>
+      <p class="lead">AI development stacks. Pick what you run on, which agent and how it is scheduled.</p>
+      <form id="filters">
+        {facetKeys.map((key) => (
+          <fieldset>
+            <legend>{facets[key]}</legend>
+            {options[key].map((value) => (
+              <label><input type="checkbox" name={key} value={value} /> {value}</label>
+            ))}
+          </fieldset>
+        ))}
+      </form>
+      <p id="count" aria-live="polite"></p>
+      <ul id="results">
+        {solutions.map(({ data }) => (
+          <li data-facets={JSON.stringify(Object.fromEntries(facetKeys.map((k) => [k, data[k]])))}>
+            <h2><a href={data.url}>{data.name}</a></h2>
+            <p>{data.summary}</p>
+            {facetKeys.flatMap((k) => data[k]).map((v) => <span class="chip">{v}</span>)}
+          </li>
+        ))}
+      </ul>
+    </main>
+    <script>
+      // Within a facet, any checked value matches (OR). Across facets, all must match (AND).
+      const form = document.querySelector<HTMLFormElement>("#filters")!;
+      const items = [...document.querySelectorAll<HTMLLIElement>("#results li")];
+      const count = document.querySelector("#count")!;
+
+      function apply() {
+        const params = new URLSearchParams();
+        const checked: Record<string, string[]> = {};
+        for (const [key, value] of new FormData(form)) {
+          (checked[key] ??= []).push(String(value));
+          params.append(key, String(value));
+        }
+        let shown = 0;
+        for (const item of items) {
+          const facets: Record<string, string[]> = JSON.parse(item.dataset.facets!);
+          const match = Object.entries(checked).every(([key, values]) =>
+            values.some((v) => facets[key].includes(v)),
+          );
+          item.hidden = !match;
+          if (match) shown++;
+        }
+        count.textContent = `${shown} of ${items.length} stacks`;
+        const query = params.toString();
+        history.replaceState(null, "", query ? `?${query}` : location.pathname);
+      }
+
+      // Restore filters from the URL so a filtered view can be shared.
+      const initial = new URLSearchParams(location.search);
+      for (const input of form.querySelectorAll<HTMLInputElement>("input")) {
+        input.checked = initial.getAll(input.name).includes(input.value);
+      }
+      form.addEventListener("change", apply);
+      apply();
+    </script>
+  </body>
+</html>
