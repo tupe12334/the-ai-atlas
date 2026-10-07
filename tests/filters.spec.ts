@@ -26,3 +26,14 @@ test("fits a phone screen without horizontal scroll", async ({ page }) => {
   await page.goto("/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test("shows an empty state and clears filters", async ({ page }) => {
+  await page.goto("/?runtime=on-prem&agent=Codex");
+  await expect(visible(page)).toHaveCount(0);
+  await expect(page.locator("#empty")).toBeVisible();
+
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  await expect(page.locator("#empty")).toBeHidden();
+  await expect(page.locator("#count")).toHaveText(/^(\d+) of \1 stacks$/);
+  expect(new URL(page.url()).search).toBe("");
+});

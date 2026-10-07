@@ -10,16 +10,19 @@ export const facets = {
   models: "Models",
 } as const;
 
+const facetValue = z.string().trim().min(1);
+
 const solutions = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/solutions" }),
-  schema: z.object({
+  // Strict so a misspelled key fails the build instead of dropping a facet.
+  schema: z.strictObject({
     name: z.string(),
     summary: z.string(),
-    url: z.url(),
+    url: z.url({ protocol: /^https$/ }),
     runtime: z.array(z.enum(["on-prem", "cloud"])).min(1),
-    agent: z.array(z.string()).min(1),
-    scheduler: z.array(z.string()).default([]),
-    models: z.array(z.string()).default([]),
+    agent: z.array(facetValue).min(1),
+    scheduler: z.array(facetValue).default([]),
+    models: z.array(facetValue).default([]),
   }),
 });
 

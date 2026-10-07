@@ -52,7 +52,8 @@ const options = Object.fromEntries(
           </fieldset>
         ))}
       </form>
-      <p id="count" aria-live="polite"></p>
+      <p><span id="count" aria-live="polite"></span> <button type="reset" form="filters">Clear filters</button></p>
+      <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
       <ul id="results">
         {solutions.map(({ data }) => (
           <li data-facets={JSON.stringify(Object.fromEntries(facetKeys.map((k) => [k, data[k]])))}>
@@ -68,6 +69,7 @@ const options = Object.fromEntries(
       const form = document.querySelector<HTMLFormElement>("#filters")!;
       const items = [...document.querySelectorAll<HTMLLIElement>("#results li")];
       const count = document.querySelector("#count")!;
+      const empty = document.querySelector<HTMLElement>("#empty")!;
 
       function apply() {
         const params = new URLSearchParams();
@@ -86,6 +88,7 @@ const options = Object.fromEntries(
           if (match) shown++;
         }
         count.textContent = `${shown} of ${items.length} stacks`;
+        empty.hidden = shown > 0;
         const query = params.toString();
         history.replaceState(null, "", query ? `?${query}` : location.pathname);
       }
@@ -96,6 +99,8 @@ const options = Object.fromEntries(
         input.checked = initial.getAll(input.name).includes(input.value);
       }
       form.addEventListener("change", apply);
+      // "reset" fires before the inputs clear, so apply on the next tick.
+      form.addEventListener("reset", () => setTimeout(apply));
       apply();
     </script>
   </body>
