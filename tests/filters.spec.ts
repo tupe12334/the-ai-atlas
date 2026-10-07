@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const visible = (page: import("@playwright/test").Page) =>
-  page.locator("#results li:visible h2");
+  page.locator("#results > li:visible h2");
 
 test("filters AND across facets, OR within a facet, and round-trip the URL", async ({ page }) => {
   await page.goto("./?runtime=on-prem&scheduler=Moadim");

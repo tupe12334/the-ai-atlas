@@ -1,4 +1,5 @@
 ---
+import "@fontsource-variable/archivo/standard.css";
 import { getCollection } from "astro:content";
 import { facets } from "../content.config";
 
@@ -12,6 +13,18 @@ const options = Object.fromEntries(
     [...new Set(solutions.flatMap((s) => s.data[key]))].sort(),
   ]),
 );
+
+// Hero backdrop: concentric wobbly rings, like contour lines on a survey map.
+// Deterministic, so every build renders the same terrain.
+const contours = Array.from({ length: 14 }, (_, ring) => {
+  const r = 40 + ring * 34;
+  const points = Array.from({ length: 73 }, (_, i) => {
+    const a = (i / 72) * Math.PI * 2;
+    const wobble = 1 + 0.09 * Math.sin(3 * a + ring * 0.7) + 0.05 * Math.sin(7 * a - ring);
+    return `${(820 + Math.cos(a) * r * 1.35 * wobble).toFixed(1)},${(150 + Math.sin(a) * r * wobble).toFixed(1)}`;
+  });
+  return `M${points.join("L")}Z`;
+});
 ---
 
 <html lang="en">
@@ -20,54 +33,293 @@ const options = Object.fromEntries(
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>The AI Atlas</title>
     <meta name="description" content="A catalog of AI development stacks. Filter by runtime, agent, scheduler and models." />
-    <style>
-      :root { color-scheme: light dark; --bg: #fff; --fg: #1a1a1a; --muted: #666; --line: #ddd; --chip: #f1f1f1; }
-      @media (prefers-color-scheme: dark) { :root { --bg: #141414; --fg: #eee; --muted: #999; --line: #333; --chip: #242424; } }
-      body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
-      main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1rem; }
-      h1 { margin: 0; } .lead { color: var(--muted); margin-top: .25rem; }
-      form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-      fieldset { border: 1px solid var(--line); border-radius: .5rem; margin: 0; }
-      legend { font-weight: 600; padding: 0 .25rem; }
-      label { display: block; }
-      ul { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 1rem; }
-      li { border: 1px solid var(--line); border-radius: .5rem; padding: 1rem; }
-      li h2 { font-size: 1.1rem; margin: 0 0 .25rem; } li p { margin: 0 0 .5rem; color: var(--muted); }
+    <style is:global>
+      :root {
+        --paper: #edf1ee;
+        --sheet: #f8faf8;
+        --ink: #13233f;
+        --muted: #536176;
+        --rule: #c9d3cf;
+        --runtime: #2e7d5b;
+        --agent: #2f5bd3;
+        --scheduler: #b07800;
+        --models: #7c3fd8;
+        --contour: #13233f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #101b2e;
+          --sheet: #16243b;
+          --ink: #e6ece8;
+          --muted: #9aa8bb;
+          --rule: #2a3a55;
+          --runtime: #5cc597;
+          --agent: #7d9cff;
+          --scheduler: #f0b440;
+          --models: #b48cff;
+          --contour: #e6ece8;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Archivo Variable", system-ui, sans-serif;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
       a { color: inherit; }
-      .chip { display: inline-block; background: var(--chip); border-radius: 1rem; padding: 0 .5rem; margin: .125rem; font-size: .85rem; }
-      [hidden] { display: none; }
+      :focus-visible { outline: 3px solid var(--agent); outline-offset: 2px; }
+    </style>
+    <style>
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 2px solid var(--ink);
+      }
+      .hero svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        color: var(--contour);
+        opacity: 0.16;
+        pointer-events: none;
+      }
+      .hero-inner {
+        position: relative;
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 4.5rem 1rem 3rem;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(3rem, 11vw, 8.5rem);
+        font-weight: 900;
+        font-stretch: 125%;
+        line-height: 0.88;
+        letter-spacing: -0.02em;
+      }
+      .lead {
+        max-width: 34rem;
+        margin: 1.5rem 0 0;
+        font-size: 1.2rem;
+        color: var(--muted);
+      }
+
+      .layout {
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+        display: grid;
+        gap: 2rem;
+      }
+      @media (min-width: 60rem) {
+        .layout { grid-template-columns: 16rem 1fr; align-items: start; }
+        .panel { position: sticky; top: 1.5rem; }
+        .panel summary { display: none; }
+      }
+      .panel summary {
+        padding: 0.6rem 0.9rem;
+        border: 1.5px solid var(--ink);
+        border-radius: 0.375rem;
+        font-weight: 700;
+        font-stretch: 112%;
+        cursor: pointer;
+      }
+      .panel[open] summary { margin-bottom: 1.25rem; }
+
+      .legend { display: grid; gap: 1.5rem; }
+      fieldset { border: 0; margin: 0; padding: 0; }
+      legend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0;
+        margin-bottom: 0.5rem;
+        font-weight: 800;
+        font-stretch: 112%;
+      }
+      legend::before {
+        content: "";
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+        background: var(--layer);
+      }
+      .options { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+      .option {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.7rem;
+        border: 1.5px solid var(--rule);
+        border-radius: 999px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        user-select: none;
+      }
+      .option:hover { border-color: var(--layer); }
+      .option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+      .option:has(input:checked) { background: var(--layer); border-color: var(--layer); color: var(--paper); font-weight: 600; }
+      .option:has(input:focus-visible) { outline: 3px solid var(--layer); outline-offset: 2px; }
+
+      .status {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0 0 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1.5px solid var(--rule);
+      }
+      #count { font-weight: 700; font-stretch: 112%; }
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: none;
+        border: 0;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+      #empty { margin: 2rem 0; font-size: 1.1rem; color: var(--muted); }
+
+      ul#results {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+        gap: 1rem;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        background: var(--sheet);
+        border: 1.5px solid var(--ink);
+        border-radius: 0.375rem;
+        padding: 1.25rem 1.25rem 1rem;
+      }
+      .stack h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 800;
+        font-stretch: 108%;
+        line-height: 1.15;
+      }
+      .stack h2 a { text-decoration: none; }
+      .stack h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+      .stack p { margin: 0.5rem 0 1.25rem; color: var(--muted); }
+
+      /* The route: one stop per layer, joined by a line, like a transit map. */
+      .route { list-style: none; margin: auto 0 0; padding: 0; }
+      .route li {
+        position: relative;
+        display: grid;
+        grid-template-columns: 5.5rem 1fr;
+        gap: 0.5rem;
+        padding: 0 0 0.6rem 1.5rem;
+        font-size: 0.9rem;
+      }
+      .route li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.3rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background: var(--sheet);
+        border: 3px solid var(--layer);
+        z-index: 1;
+      }
+      .route li:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        left: 0.32rem;
+        top: 0.9rem;
+        bottom: -0.3rem;
+        width: 3px;
+        background: linear-gradient(var(--layer), var(--next-layer, var(--rule)));
+      }
+      .route li:last-child { padding-bottom: 0; }
+      .route .layer { color: var(--muted); }
+      .route .values { font-weight: 600; }
+
+      [hidden] { display: none !important; }
+      .runtime { --layer: var(--runtime); }
+      .agent { --layer: var(--agent); }
+      .scheduler { --layer: var(--scheduler); }
+      .models { --layer: var(--models); }
+
+      footer {
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 0 1rem 3rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
     </style>
   </head>
   <body>
-    <main>
-      <h1>The AI Atlas</h1>
-      <p class="lead">AI development stacks. Pick what you run on, which agent and how it is scheduled.</p>
-      <form id="filters">
+    <header class="hero">
+      <svg viewBox="0 0 1200 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+        {contours.map((d) => <path d={d} fill="none" stroke="currentColor" stroke-width="1.2" />)}
+      </svg>
+      <div class="hero-inner">
+        <h1>The AI<br />Atlas</h1>
+        <p class="lead">Find an AI development stack that fits how you work. Choose where it runs, which agent drives it and what keeps it on schedule.</p>
+      </div>
+    </header>
+    <main class="layout">
+      <details class="panel" open>
+      <summary>Filter stacks</summary>
+      <form id="filters" class="legend" aria-label="Filter stacks">
         {facetKeys.map((key) => (
-          <fieldset>
+          <fieldset class={key}>
             <legend>{facets[key]}</legend>
-            {options[key].map((value) => (
-              <label><input type="checkbox" name={key} value={value} /> {value}</label>
-            ))}
+            <div class="options">
+              {options[key].map((value) => (
+                <label class="option"><input type="checkbox" name={key} value={value} />{value}</label>
+              ))}
+            </div>
           </fieldset>
         ))}
       </form>
-      <p><span id="count" aria-live="polite"></span> <button type="reset" form="filters">Clear filters</button></p>
-      <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
-      <ul id="results">
-        {solutions.map(({ data }) => (
-          <li data-facets={JSON.stringify(Object.fromEntries(facetKeys.map((k) => [k, data[k]])))}>
-            <h2><a href={data.url}>{data.name}</a></h2>
-            <p>{data.summary}</p>
-            {facetKeys.flatMap((k) => data[k]).map((v) => <span class="chip">{v}</span>)}
-          </li>
-        ))}
-      </ul>
+      </details>
+      <section aria-label="Stacks">
+        <div class="status">
+          <span id="count" aria-live="polite"></span>
+          <button type="reset" form="filters">Clear filters</button>
+        </div>
+        <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
+        <ul id="results">
+          {solutions.map(({ data }) => (
+            <li class="stack" data-facets={JSON.stringify(Object.fromEntries(facetKeys.map((k) => [k, data[k]])))}>
+              <h2><a href={data.url}>{data.name}</a></h2>
+              <p>{data.summary}</p>
+              <ul class="route" aria-label="Stack layers">
+                {facetKeys.filter((k) => data[k].length > 0).map((k, i, layers) => (
+                  <li class={k} style={layers[i + 1] && `--next-layer: var(--${layers[i + 1]})`}>
+                    <span class="layer">{facets[k]}</span>
+                    <span class="values">{data[k].join(", ")}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
+    <footer>
+      <p>Missing a stack? <a href="https://github.com/tupe12334/the-ai-atlas">Add it on GitHub</a>.</p>
+    </footer>
     <script>
       // Within a facet, any checked value matches (OR). Across facets, all must match (AND).
       const form = document.querySelector<HTMLFormElement>("#filters")!;
-      const items = [...document.querySelectorAll<HTMLLIElement>("#results li")];
+      const items = [...document.querySelectorAll<HTMLLIElement>("#results > li")];
       const count = document.querySelector("#count")!;
       const empty = document.querySelector<HTMLElement>("#empty")!;
 
@@ -97,6 +349,10 @@ const options = Object.fromEntries(
       const initial = new URLSearchParams(location.search);
       for (const input of form.querySelectorAll<HTMLInputElement>("input")) {
         input.checked = initial.getAll(input.name).includes(input.value);
+      }
+      // Keep the filter panel open on wide screens; fold it away on phones.
+      if (!matchMedia("(min-width: 60rem)").matches) {
+        document.querySelector<HTMLDetailsElement>("details.panel")!.open = initial.size > 0;
       }
       form.addEventListener("change", apply);
       // "reset" fires before the inputs clear, so apply on the next tick.
