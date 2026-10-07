@@ -327,6 +327,9 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       // Within a facet, any checked value matches (OR). Across facets, all must match (AND).
       const form = document.querySelector<HTMLFormElement>("#filters")!;
       const items = [...document.querySelectorAll<HTMLLIElement>("#results > li")];
+      const stacks = new Map(
+        items.map((item) => [item, JSON.parse(item.dataset.facets!) as Record<string, string[]>]),
+      );
       const count = document.querySelector("#count")!;
       const empty = document.querySelector<HTMLElement>("#empty")!;
       const clear = document.querySelector<HTMLElement>("button[type=reset]")!;
@@ -338,14 +341,30 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
           (checked[key] ??= []).push(String(value));
           params.append(key, String(value));
         }
+        const matches = (facets: Record<string, string[]>, skip?: string) =>
+          Object.entries(checked).every(
+            ([key, values]) => key === skip || values.some((v) => facets[key].includes(v)),
+          );
         let shown = 0;
         for (const item of items) {
-          const facets: Record<string, string[]> = JSON.parse(item.dataset.facets!);
-          const match = Object.entries(checked).every(([key, values]) =>
-            values.some((v) => facets[key].includes(v)),
-          );
+          const match = matches(stacks.get(item)!);
           item.hidden = !match;
           if (match) shown++;
+        }
+        // Hide options that would lead to no stacks, given the filters in the other facets.
+        // Checked options stay visible so they can be unchecked.
+        for (const fieldset of form.querySelectorAll("fieldset")) {
+          let available = 0;
+          for (const input of fieldset.querySelectorAll<HTMLInputElement>("input")) {
+            const reachable =
+              input.checked ||
+              [...stacks.values()].some(
+                (facets) => facets[input.name].includes(input.value) && matches(facets, input.name),
+              );
+            input.closest("label")!.hidden = !reachable;
+            if (reachable) available++;
+          }
+          fieldset.hidden = available === 0;
         }
         count.textContent = `${shown} of ${items.length} stacks`;
         empty.hidden = shown > 0;

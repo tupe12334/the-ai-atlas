@@ -11,9 +11,10 @@ test("filters AND across facets, OR within a facet, and round-trip the URL", asy
     "Hermes + Moadim on your own machine",
   ]);
 
+  // Each step only uses options that still lead to stacks.
   await page.getByLabel("on-prem").uncheck();
-  await page.getByLabel("cloud").check();
   await page.getByLabel("Claude routines").check();
+  await page.getByLabel("cloud").check();
   await expect(visible(page)).toHaveText(["Claude Code routines in the cloud"]);
   await expect(page.locator("#count")).toHaveText(/^1 of \d+ stacks$/);
   expect(new URL(page.url()).searchParams.getAll("scheduler").sort()).toEqual([
@@ -53,4 +54,28 @@ test("hides Clear filters until a filter is set", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Clear filters" })).toBeHidden();
   await page.getByLabel("Hermes", { exact: true }).check();
   await expect(page.getByRole("button", { name: "Clear filters" })).toBeVisible();
+});
+
+test("hides options that would lead to no stacks", async ({ page }) => {
+  const option = (name: string) => page.locator("label.option", { hasText: name });
+  await page.goto("./");
+  await expect(option("GitHub Actions cron")).toBeVisible();
+
+  await page.getByLabel("on-prem").check();
+  await expect(option("GitHub Actions cron")).toBeHidden();
+  await expect(option("Claude routines")).toBeHidden();
+  await expect(option("Codex")).toBeHidden();
+  await expect(option("Moadim")).toBeVisible();
+  // Options in the same facet stay, since checking them widens the results (OR).
+  await expect(option("cloud")).toBeVisible();
+
+  await page.getByLabel("on-prem").uncheck();
+  await expect(option("GitHub Actions cron")).toBeVisible();
+});
+
+test("keeps a checked option visible even when nothing else matches", async ({ page }) => {
+  await page.goto("./?runtime=on-prem&scheduler=GitHub+Actions+cron");
+  await expect(page.locator("#empty")).toBeVisible();
+  await expect(page.getByLabel("GitHub Actions cron")).toBeChecked();
+  await expect(page.locator("label.option", { hasText: "GitHub Actions cron" })).toBeVisible();
 });
