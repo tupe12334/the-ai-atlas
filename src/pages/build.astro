@@ -544,7 +544,9 @@ const catalog = {
     const dropped = layers.filter((l) => initial.has(l) && !restored[l]);
 
     form.addEventListener("change", (e) => {
-      if (e.target !== compare) apply();
+      if (e.target === compare) return;
+      say("");
+      apply();
     });
     nameInput.addEventListener("input", apply);
     form.addEventListener("submit", (e) => e.preventDefault());
