@@ -1,0 +1,546 @@
+---
+import { facets } from "../content.config";
+import Base from "../layouts/Base.astro";
+import { layers, parts, solutions } from "../catalog";
+import { stackBuild } from "../builds";
+
+// A build is not complete without these. The other layers are optional.
+const required = ["runtime", "agent"];
+const catalog = {
+  parts,
+  stacks: solutions.map(({ id, name, stack }) => ({ id, name, stack })),
+  required,
+  labels: facets,
+};
+---
+
+<Base title="Build your own · The AI Atlas" description="Design your own AI solution piece by piece. Each part you pick narrows what fits next, and the builder warns when two parts do not work together." page="build">
+  <style>
+    .intro { max-width: 76rem; margin: 0 auto; padding: 2.5rem 1rem 1rem; }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 7vw, 4.5rem);
+      font-weight: 900;
+      font-stretch: 125%;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+    .lead { max-width: 40rem; margin: 1rem 0 0; font-size: 1.15rem; color: var(--muted); }
+    .starters { margin-top: 1.5rem; }
+    .starters h2 { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 800; font-stretch: 112%; }
+    .starters ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.375rem; }
+    .starters a {
+      display: inline-block;
+      padding: 0.25rem 0.7rem;
+      border: 1.5px solid var(--rule);
+      border-radius: 999px;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .starters a:hover { border-color: var(--ink); }
+
+    .builder {
+      max-width: 76rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 4rem;
+      display: grid;
+      gap: 2rem;
+    }
+    @media (min-width: 60rem) {
+      .builder { grid-template-columns: minmax(0, 1fr) 23rem; align-items: start; }
+      .sheet { position: sticky; top: 1.5rem; }
+    }
+
+    .steps { display: grid; gap: 2rem; }
+    fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+    legend {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-stretch: 112%;
+    }
+    .step-no {
+      display: inline-grid;
+      place-items: center;
+      width: 1.8rem;
+      height: 1.8rem;
+      border-radius: 50%;
+      background: var(--layer);
+      color: var(--paper);
+      font-size: 0.95rem;
+    }
+    .optional { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+    .parts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+      gap: 0.6rem;
+    }
+    .part {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--sheet);
+      border: 1.5px solid var(--rule);
+      border-radius: 0.375rem;
+      cursor: pointer;
+    }
+    .part:hover { border-color: var(--layer); }
+    .part input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .part:has(input:checked) { border-color: var(--layer); box-shadow: inset 0.35rem 0 0 var(--layer); }
+    .part:has(input:focus-visible) { outline: 3px solid var(--layer); outline-offset: 2px; }
+    .part .name { font-weight: 700; }
+    .part .summary { font-size: 0.875rem; color: var(--muted); }
+    .part .note { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+    .part.misfit { border-style: dashed; }
+    .part.misfit .note, .part.clash .note { color: var(--warn); }
+    .part.clash:has(input:checked) { border-color: var(--warn); box-shadow: inset 0.35rem 0 0 var(--warn); }
+    .show-misfits { margin-top: 0.6rem; font-size: 0.9rem; color: var(--muted); }
+
+    .sheet {
+      background: var(--sheet);
+      border: 1.5px solid var(--ink);
+      border-radius: 0.375rem;
+      padding: 1.25rem;
+      display: grid;
+      gap: 1.25rem;
+    }
+    .sheet h2 { margin: 0; font-size: 1.3rem; font-weight: 800; font-stretch: 108%; }
+    .sheet h3 { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 800; font-stretch: 108%; }
+    .field { display: grid; gap: 0.25rem; font-size: 0.9rem; font-weight: 600; }
+    input[type="text"], select {
+      font: inherit;
+      font-weight: 400;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1.5px solid var(--muted);
+      border-radius: 0.375rem;
+      padding: 0.4rem 0.6rem;
+      width: 100%;
+    }
+    .route .clash::before { border-color: var(--warn); }
+    .route .clash .values { color: var(--warn); }
+
+    #check { border-left: 4px solid var(--rule); padding: 0.25rem 0 0.25rem 0.75rem; }
+    #check.ok { border-color: var(--ok); }
+    #check.warn { border-color: var(--warn); }
+    /* Nodes built by the script below carry no scope attribute, so these rules are global. */
+    :global(#check p) { margin: 0; }
+    :global(#check .verdict) { font-weight: 800; }
+    :global(#check.ok .verdict) { color: var(--ok); }
+    :global(#check.warn .verdict) { color: var(--warn); }
+    :global(#check ul) { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
+    :global(#check .proven) { margin-top: 0.5rem; font-size: 0.9rem; color: var(--muted); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline; }
+    .actions .primary {
+      padding: 0.45rem 0.9rem;
+      border: 1.5px solid var(--ink);
+      border-radius: 0.375rem;
+      background: var(--ink);
+      color: var(--paper);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    #toast { min-height: 1.5em; margin: 0; font-size: 0.9rem; color: var(--muted); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-top: 0.6rem; }
+:global(#diff th), :global(#diff td) { text-align: left; padding: 0.3rem 0.4rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+    thead th { font-weight: 700; }
+    :global(#diff tbody th) { font-weight: 400; color: var(--muted); }
+    :global(#diff tr.differs td) { font-weight: 700; }
+    :global(#diff tr.differs th::after) { content: " ≠"; color: var(--warn); }
+
+    /* On phones the sheet sits below the steps, so a bar keeps the build in view while picking. */
+    .peek {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      display: block;
+      margin: 0 -1rem;
+      padding: 0.6rem 1rem;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .peek strong { display: block; }
+    @media (min-width: 60rem) { .peek { display: none; } }
+
+    #saved { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; font-size: 0.9rem; }
+    :global(#saved li) { display: flex; justify-content: space-between; gap: 0.5rem; }
+    .empty-note { margin: 0; font-size: 0.9rem; color: var(--muted); }
+  </style>
+
+  <header class="intro">
+    <h1>Build your own</h1>
+    <p class="lead">Pick parts one layer at a time. Each pick narrows what fits next. The build sheet checks that your parts work together and tells you why when they do not.</p>
+    <nav class="starters" aria-labelledby="starters-title">
+      <h2 id="starters-title">Or start from a proven stack and change it</h2>
+      <ul>
+        {solutions.map((s) => (
+          <li><a href={`?${new URLSearchParams({ ...stackBuild(s.stack), name: s.name })}`}>{s.name}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </header>
+
+  <form id="build" class="builder" aria-label="Your build">
+    <div class="steps">
+      {layers.map((layer, i) => (
+        <fieldset class={layer}>
+          <legend>
+            <span class="step-no" aria-hidden="true">{i + 1}</span>{facets[layer]}
+            {!required.includes(layer) && <span class="optional">(optional)</span>}
+          </legend>
+          <div class="parts">
+            {Object.values(parts).filter((p) => p.layer === layer).map((p) => (
+              <label class="part">
+                <input type="radio" name={layer} value={p.id} aria-labelledby={`n-${p.id}`} aria-describedby={`s-${p.id} t-${p.id}`} />
+                <span class="name" id={`n-${p.id}`}>{p.name}</span>
+                <span class="summary" id={`s-${p.id}`}>{p.summary}</span>
+                <span class="note" id={`t-${p.id}`}></span>
+              </label>
+            ))}
+            {!required.includes(layer) && (
+              <label class="part">
+                <input type="radio" name={layer} value="" checked aria-labelledby={`n-none-${layer}`} aria-describedby={`s-none-${layer}`} />
+                <span class="name" id={`n-none-${layer}`}>No {facets[layer].toLowerCase()}</span>
+                <span class="summary" id={`s-none-${layer}`}>Leave this layer out.</span>
+              </label>
+            )}
+          </div>
+          <button type="button" class="show-misfits" aria-expanded="false" hidden></button>
+        </fieldset>
+      ))}
+      <a class="peek" href="#sheet-title" id="peek"></a>
+    </div>
+
+    <aside class="sheet" aria-labelledby="sheet-title">
+      <h2 id="sheet-title">Your build</h2>
+      <label class="field">Build name<input type="text" name="name" id="name" placeholder="Untitled build" autocomplete="off" /></label>
+      <ul class="route" id="route" aria-label="Build layers">
+        {layers.map((layer, i) => (
+          <li class:list={[layer, "unlisted"]} style={layers[i + 1] && `--next-layer: var(--${layers[i + 1]})`}>
+            <span class="layer">{facets[layer]}</span>
+            <span class="values">Not picked</span>
+          </li>
+        ))}
+      </ul>
+      <div id="check" role="status" aria-live="polite"></div>
+      <div class="actions">
+        <button type="button" class="primary" id="copy">Copy link</button>
+        <button type="button" id="save">Save</button>
+        <a id="discuss" href="https://github.com/tupe12334/the-ai-atlas/issues/new">Discuss on GitHub</a>
+        <button type="reset">Start over</button>
+      </div>
+      <p id="toast" role="status" aria-live="polite"></p>
+      <section aria-labelledby="compare-title">
+        <h3 id="compare-title">Compare</h3>
+        <label class="field">Compare with
+          <select id="compare">
+            <option value="">Pick a build</option>
+            <optgroup label="Proven stacks">
+              {solutions.map((s) => <option value={`stack:${s.id}`}>{s.name}</option>)}
+            </optgroup>
+            <optgroup label="Your saved builds" id="compare-saved"></optgroup>
+          </select>
+        </label>
+        <table id="diff" hidden>
+          <thead><tr><th scope="col">Layer</th><th scope="col">This build</th><th scope="col" id="diff-other"></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+      <section aria-labelledby="saved-title">
+        <h3 id="saved-title">Your saved builds</h3>
+        <p class="empty-note" id="saved-empty">Builds you save stay in this browser. Copy the link to share one.</p>
+        <ul id="saved"></ul>
+      </section>
+    </aside>
+  </form>
+  <script type="application/json" id="catalog" set:html={JSON.stringify(catalog)} />
+
+  <script>
+    import { conflicts, readBuild, stackHas, type Build, type Parts, type Stack } from "../builds";
+    import type { Layer } from "../content.config";
+
+    type Saved = { name: string; query: string };
+    const { parts, stacks, required, labels } = JSON.parse(document.querySelector("#catalog")!.textContent!) as {
+      parts: Parts;
+      stacks: { id: string; name: string; stack: Stack }[];
+      required: Layer[];
+      labels: Record<Layer, string>;
+    };
+    const form = document.querySelector<HTMLFormElement>("#build")!;
+    const nameInput = document.querySelector<HTMLInputElement>("#name")!;
+    const check = document.querySelector<HTMLElement>("#check")!;
+    const toast = document.querySelector<HTMLElement>("#toast")!;
+    const compare = document.querySelector<HTMLSelectElement>("#compare")!;
+    const layers = [...form.querySelectorAll("fieldset")].map((f) => f.className as Layer);
+    const label = (layer: Layer) => labels[layer];
+    const nameOf = (id: string) => parts[id].name;
+    const showMisfits = new Set<Layer>();
+
+    function readForm(): Build {
+      const build: Build = {};
+      for (const layer of layers) {
+        const id = new FormData(form).get(layer);
+        if (id) build[layer] = String(id);
+      }
+      return build;
+    }
+
+    const query = (build: Build, name: string) => {
+      const params = new URLSearchParams(build as Record<string, string>);
+      if (name) params.set("name", name);
+      return params.toString();
+    };
+
+    // Saved builds live only in this browser. Storage can throw (private mode), so every access is guarded.
+    const KEY = "the-ai-atlas:builds";
+    function loadSaved(): Saved[] {
+      try {
+        return JSON.parse(localStorage.getItem(KEY) ?? "[]");
+      } catch {
+        return [];
+      }
+    }
+    function storeSaved(saved: Saved[]) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(saved));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function renderSaved() {
+      const saved = loadSaved();
+      const list = document.querySelector("#saved")!;
+      list.replaceChildren(
+        ...saved.map((s, i) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = `?${s.query}`;
+          a.textContent = s.name;
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = "Remove";
+          remove.setAttribute("aria-label", `Remove ${s.name}`);
+          remove.addEventListener("click", () => {
+            saved.splice(i, 1);
+            storeSaved(saved);
+            renderSaved();
+            renderCompare();
+          });
+          li.append(a, remove);
+          return li;
+        }),
+      );
+      document.querySelector<HTMLElement>("#saved-empty")!.hidden = saved.length > 0;
+      const group = document.querySelector("#compare-saved")!;
+      group.replaceChildren(
+        ...saved.map((s, i) => {
+          const option = document.createElement("option");
+          option.value = `saved:${i}`;
+          option.textContent = s.name;
+          return option;
+        }),
+      );
+    }
+
+    function renderCompare() {
+      const table = document.querySelector<HTMLTableElement>("#diff")!;
+      const [kind, key] = compare.value.split(":");
+      let other: Stack | undefined;
+      let otherName = "";
+      if (kind === "stack") {
+        const s = stacks.find((s) => s.id === key)!;
+        other = s.stack;
+        otherName = s.name;
+      } else if (kind === "saved") {
+        const s = loadSaved()[Number(key)];
+        if (s) {
+          const b = readBuild(new URLSearchParams(s.query), parts);
+          other = Object.fromEntries(layers.map((l) => [l, b[l] ? [b[l]] : []])) as Stack;
+          otherName = s.name;
+        }
+      }
+      table.hidden = !other;
+      if (!other) return;
+      const build = readForm();
+      document.querySelector("#diff-other")!.textContent = otherName;
+      table.tBodies[0].replaceChildren(
+        ...layers.map((layer) => {
+          const tr = document.createElement("tr");
+          const mine = build[layer];
+          // A proven stack can list alternatives in a layer. Matching any of them is not a difference.
+          const same = mine ? other[layer].includes(mine) : other[layer].length === 0;
+          tr.className = same ? "" : "differs";
+          const cells = [label(layer), mine ? nameOf(mine) : "—", other[layer].map(nameOf).join(" or ") || "—"];
+          cells.forEach((text, i) => {
+            const cell = document.createElement(i ? "td" : "th");
+            if (!i) cell.setAttribute("scope", "row");
+            cell.textContent = text;
+            tr.append(cell);
+          });
+          return tr;
+        }),
+      );
+    }
+
+    function apply() {
+      const build = readForm();
+      const name = nameInput.value.trim();
+      const problems = conflicts(build, parts);
+      const clashing = new Set(problems.flatMap((c) => [c.part, c.other]));
+
+      // Narrow each layer: a part that breaks a rule with the other picks does not fit.
+      for (const fieldset of form.querySelectorAll("fieldset")) {
+        const layer = fieldset.className as Layer;
+        let misfits = 0;
+        for (const input of fieldset.querySelectorAll<HTMLInputElement>("input[value]:not([value=''])")) {
+          const card = input.closest("label")!;
+          const candidate = { ...build, [layer]: input.value };
+          const clash = conflicts(candidate, parts).find((c) => c.part === input.value || c.other === input.value);
+          const note = card.querySelector(".note")!;
+          const fits = !clash;
+          if (clash) {
+            const other = clash.part === input.value ? clash.other : clash.part;
+            note.textContent = `Does not fit ${nameOf(other)}. ${clash.why}`;
+          } else {
+            const proven = stacks.filter((s) => stackHas(s.stack, candidate)).length;
+            note.textContent = proven
+              ? `In ${proven} proven stack${proven > 1 ? "s" : ""} with your picks`
+              : "No proven stack uses it with your picks yet";
+          }
+          card.classList.toggle("misfit", !fits && !input.checked);
+          card.classList.toggle("clash", !fits && input.checked);
+          // Picked parts always stay in view, so a clash can be seen and changed.
+          card.hidden = !fits && !input.checked && !showMisfits.has(layer);
+          if (!fits && !input.checked) misfits++;
+        }
+        const toggle = fieldset.querySelector<HTMLButtonElement>(".show-misfits")!;
+        toggle.hidden = misfits === 0;
+        const open = showMisfits.has(layer);
+        toggle.setAttribute("aria-expanded", String(open));
+        const count = misfits > 1 ? `${misfits} parts that do not fit` : "1 part that does not fit";
+        toggle.textContent = open ? `Hide ${count}` : `Show ${count}, and why`;
+      }
+
+      // The build sheet.
+      for (const li of document.querySelectorAll<HTMLLIElement>("#route li")) {
+        const layer = layers.find((l) => li.classList.contains(l))!;
+        const id = build[layer];
+        li.classList.toggle("unlisted", !id);
+        li.classList.toggle("clash", !!id && clashing.has(id));
+        li.querySelector(".values")!.textContent = id
+          ? nameOf(id)
+          : required.includes(layer)
+            ? "Pick one"
+            : "Not picked";
+      }
+
+      const missing = required
+        .filter((l) => !build[l])
+        .map((l) => label(l).toLowerCase())
+        .map((m) => `${/^[aeiou]/.test(m) ? "an" : "a"} ${m}`);
+      const proven = stacks.filter((s) => stackHas(s.stack, build));
+      const items = (texts: string[]) => {
+        const ul = document.createElement("ul");
+        ul.replaceChildren(...texts.map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+        return ul;
+      };
+      const p = (text: string, className: string) => Object.assign(document.createElement("p"), { textContent: text, className });
+      check.className = problems.length ? "warn" : missing.length ? "" : "ok";
+      if (problems.length) {
+        check.replaceChildren(
+          p("Some parts do not work together", "verdict"),
+          items(problems.map((c) => `${nameOf(c.part)} with ${nameOf(c.other)}: ${c.why}`)),
+        );
+      } else if (missing.length) {
+        check.replaceChildren(p(`No conflicts so far. Pick ${missing.join(" and ")} to finish the build.`, "verdict"));
+      } else {
+        check.replaceChildren(
+          p("All parts work together", "verdict"),
+          p(
+            proven.length
+              ? `Proven: ${proven.map((s) => s.name).join(", ")} ${proven.length > 1 ? "run" : "runs"} this build.`
+              : "No proven stack runs this exact build yet. If you run it, share it on GitHub.",
+            "proven",
+          ),
+        );
+      }
+
+      const peek = document.querySelector<HTMLElement>("#peek")!;
+      peek.replaceChildren(
+        Object.assign(document.createElement("strong"), {
+          textContent: problems.length ? "Some parts do not work together" : missing.length ? "Build in progress" : "All parts work together",
+        }),
+        layers.flatMap((l) => (build[l] ? [nameOf(build[l])] : [])).join(" · ") || "No parts picked yet",
+      );
+
+      const q = query(build, name);
+      history.replaceState(null, "", q ? `?${q}` : location.pathname);
+      const lines = layers.map((l) => `- ${label(l)}: ${build[l] ? nameOf(build[l]) : "not picked"}`);
+      const issue = new URLSearchParams({
+        title: `Build: ${name || "Untitled build"}`,
+        body: `${location.href}\n\n${lines.join("\n")}\n\n<!-- Do you run this build? Tell us how it works for you. -->\n`,
+      });
+      document.querySelector<HTMLAnchorElement>("#discuss")!.href = `https://github.com/tupe12334/the-ai-atlas/issues/new?${issue}`;
+      renderCompare();
+    }
+
+    function say(text: string) {
+      toast.textContent = text;
+    }
+
+    // Restore the build from the URL, so a shared link opens the same build.
+    const initial = new URLSearchParams(location.search);
+    const restored = readBuild(initial, parts);
+    for (const input of form.querySelectorAll<HTMLInputElement>("input[type=radio]")) {
+      const layer = input.name as Layer;
+      input.checked = (restored[layer] ?? "") === input.value;
+    }
+    nameInput.value = initial.get("name") ?? "";
+
+    form.addEventListener("change", (e) => {
+      if (e.target !== compare) apply();
+    });
+    nameInput.addEventListener("input", apply);
+    form.addEventListener("submit", (e) => e.preventDefault());
+    // "reset" fires before the inputs clear, so apply on the next tick.
+    form.addEventListener("reset", () => setTimeout(() => (say(""), apply())));
+    compare.addEventListener("change", renderCompare);
+    for (const toggle of form.querySelectorAll<HTMLButtonElement>(".show-misfits")) {
+      toggle.addEventListener("click", () => {
+        const layer = toggle.closest("fieldset")!.className as Layer;
+        if (!showMisfits.delete(layer)) showMisfits.add(layer);
+        apply();
+      });
+    }
+    document.querySelector("#copy")!.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        say("Link copied. Anyone with the link sees this build.");
+      } catch {
+        say("Could not copy. Copy the address from the address bar.");
+      }
+    });
+    document.querySelector("#save")!.addEventListener("click", () => {
+      const name = nameInput.value.trim() || "Untitled build";
+      const saved = loadSaved().filter((s) => s.name !== name);
+      saved.unshift({ name, query: query(readForm(), name) });
+      say(storeSaved(saved) ? `Saved "${name}" in this browser.` : "This browser does not allow saving. Copy the link instead.");
+      renderSaved();
+    });
+
+    renderSaved();
+    apply();
+  </script>
+</Base>

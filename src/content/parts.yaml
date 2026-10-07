@@ -1,0 +1,146 @@
+# Every part a build can use, keyed by id. Stacks in solutions/ and builder links refer to parts by id.
+# `needs` lists the parts this one works with in another layer. A build that picks this part
+# and a part outside the list in that layer gets a warning with `why`.
+
+on-prem:
+  layer: runtime
+  name: On-prem
+  summary: Your own machine or server.
+cloud:
+  layer: runtime
+  name: Cloud
+  summary: Hosted by a vendor, nothing to run yourself.
+
+claude-code:
+  layer: agent
+  name: Claude Code
+  summary: Anthropic's coding agent for the terminal.
+  url: https://code.claude.com/docs
+  needs:
+    - parts: [claude]
+      why: Claude Code runs Anthropic's Claude models.
+codex:
+  layer: agent
+  name: Codex
+  summary: OpenAI's coding agent, as a CLI or in cloud sandboxes.
+  url: https://openai.com/codex
+  needs:
+    - parts: [openai, local-models]
+      why: Codex runs OpenAI models, or local models with its --oss mode.
+hermes:
+  layer: agent
+  name: Hermes
+  summary: Nous Research's self-hosted agent with tools, memory and a scheduler.
+  url: https://github.com/NousResearch/hermes-agent
+n8n-ai-agent:
+  layer: agent
+  name: n8n AI Agent
+  summary: The agent node inside n8n workflows.
+  url: https://docs.n8n.io/build/integrate-ai
+  needs:
+    - parts: [n8n]
+      why: The AI Agent node only runs inside n8n workflows.
+zapier-agents:
+  layer: agent
+  name: Zapier Agents
+  summary: Hosted agents that act across the apps you connect to Zapier.
+  url: https://zapier.com/agents
+  needs:
+    - parts: [cloud]
+      why: Zapier is hosted only. You cannot run it yourself.
+    - parts: [zapier]
+      why: Zapier Agents act through Zapier, not another workflow tool.
+activepieces-agents:
+  layer: agent
+  name: Activepieces agents
+  summary: AI agent steps inside Activepieces flows.
+  url: https://github.com/activepieces/activepieces
+  needs:
+    - parts: [activepieces]
+      why: Activepieces agents only run inside Activepieces flows.
+
+github-actions:
+  layer: workflow
+  name: GitHub Actions
+  summary: Workflows that run on GitHub events or on a schedule.
+  url: https://docs.github.com/actions
+n8n:
+  layer: workflow
+  name: n8n
+  summary: Open-source workflow automation. Self-host it or use n8n Cloud.
+  url: https://n8n.io
+zapier:
+  layer: workflow
+  name: Zapier
+  summary: Hosted automation across thousands of apps.
+  url: https://zapier.com
+  needs:
+    - parts: [cloud]
+      why: Zapier is hosted only. You cannot run it yourself.
+activepieces:
+  layer: workflow
+  name: Activepieces
+  summary: Open-source workflow automation with MCP servers. Self-host it or use the cloud version.
+  url: https://github.com/activepieces/activepieces
+
+github-actions-cron:
+  layer: scheduler
+  name: GitHub Actions cron
+  summary: The schedule trigger of GitHub Actions workflows.
+  url: https://docs.github.com/actions/reference/events-that-trigger-workflows#schedule
+  needs:
+    - parts: [github-actions]
+      why: A GitHub Actions cron only triggers GitHub Actions workflows.
+moadim:
+  layer: scheduler
+  name: Moadim
+  summary: Scheduled agent routines on your own machine.
+  url: https://moadim.io
+  needs:
+    - parts: [on-prem]
+      why: Moadim runs routines on your own machine.
+claude-routines:
+  layer: scheduler
+  name: Claude routines
+  summary: Scheduled Claude Code agents on Anthropic's cloud.
+  url: https://code.claude.com/docs/en/routines
+  needs:
+    - parts: [cloud]
+      why: Claude routines run on Anthropic's cloud, not on your machine.
+    - parts: [claude-code]
+      why: Claude routines only run Claude Code.
+hermes-cron:
+  layer: scheduler
+  name: Hermes cron
+  summary: The scheduler built into Hermes.
+  url: https://github.com/NousResearch/hermes-agent
+  needs:
+    - parts: [hermes]
+      why: Hermes cron is built into Hermes and only runs Hermes tasks.
+n8n-schedule-trigger:
+  layer: scheduler
+  name: n8n Schedule Trigger
+  summary: The trigger node that starts n8n workflows on a schedule.
+  url: https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/
+  needs:
+    - parts: [n8n]
+      why: The Schedule Trigger is an n8n node and only starts n8n workflows.
+
+claude:
+  layer: models
+  name: Claude
+  summary: Anthropic's models.
+  url: https://www.anthropic.com/claude
+openai:
+  layer: models
+  name: OpenAI
+  summary: OpenAI's GPT models.
+  url: https://platform.openai.com/docs/models
+any-openai-compatible:
+  layer: models
+  name: Any OpenAI-compatible
+  summary: Any provider with an OpenAI-compatible API, such as OpenRouter.
+local-models:
+  layer: models
+  name: Local models
+  summary: Open-weight models that run on hardware you control.

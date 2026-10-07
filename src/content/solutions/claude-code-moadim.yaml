@@ -2,6 +2,6 @@ name: Claude Code + Moadim on your own machine
 summary: Run Claude Code sessions on a local machine, scheduled as Moadim routines.
 url: https://moadim.io
 runtime: [on-prem]
-agent: [Claude Code]
-scheduler: [Moadim]
-models: [Claude]
+agent: [claude-code]
+scheduler: [moadim]
+models: [claude]
