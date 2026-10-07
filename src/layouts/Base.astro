@@ -1,0 +1,154 @@
+---
+import "@fontsource-variable/archivo/standard.css";
+import { base } from "../catalog";
+
+interface Props {
+  title: string;
+  description: string;
+  page: "stacks" | "build";
+}
+const { title, description, page } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <style is:global>
+      :root {
+        --paper: #edf1ee;
+        --sheet: #f8faf8;
+        --ink: #13233f;
+        --muted: #536176;
+        --rule: #c9d3cf;
+        --runtime: #276b4e;
+        --agent: #2f5bd3;
+        --workflow: #b3245c;
+        --scheduler: #8a5d00;
+        --models: #7c3fd8;
+        --contour: #13233f;
+        --edge: #13233f;
+        --ok: #276b4e;
+        --warn: #a3321a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #101b2e;
+          --sheet: #16243b;
+          --ink: #e6ece8;
+          --muted: #9aa8bb;
+          --rule: #2a3a55;
+          --runtime: #5cc597;
+          --agent: #7d9cff;
+          --workflow: #ff7aa8;
+          --scheduler: #f0b440;
+          --models: #b48cff;
+          --contour: #e6ece8;
+          --edge: #3b4f70;
+          --ok: #5cc597;
+          --warn: #ff8f73;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Archivo Variable", system-ui, sans-serif;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+      a { color: inherit; }
+      :focus-visible { outline: 3px solid var(--agent); outline-offset: 2px; }
+      [hidden] { display: none !important; }
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: none;
+        border: 0;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+
+      .site-nav {
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1.25rem;
+        align-items: baseline;
+        font-weight: 700;
+        font-stretch: 112%;
+      }
+      .site-nav .home { margin-right: auto; font-weight: 900; text-decoration: none; }
+      .site-nav [aria-current] { text-decoration-thickness: 3px; }
+
+      .runtime { --layer: var(--runtime); }
+      .agent { --layer: var(--agent); }
+      .workflow { --layer: var(--workflow); }
+      .scheduler { --layer: var(--scheduler); }
+      .models { --layer: var(--models); }
+
+      /* The route: one stop per layer, joined by a line, like a transit map. */
+      .route { list-style: none; margin: auto 0 0; padding: 0; }
+      .route li {
+        position: relative;
+        display: grid;
+        grid-template-columns: 5.5rem 1fr;
+        gap: 0.5rem;
+        padding: 0 0 0.6rem 1.5rem;
+        font-size: 0.9rem;
+      }
+      .route li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.3rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background: var(--sheet);
+        border: 3px solid var(--layer);
+        z-index: 1;
+      }
+      .route li:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        left: 0.32rem;
+        top: 0.9rem;
+        bottom: -0.3rem;
+        width: 3px;
+        background: linear-gradient(var(--layer), var(--next-layer, var(--rule)));
+      }
+      .route li:last-child { padding-bottom: 0; }
+      .route .layer { color: var(--muted); }
+      .route .values { font-weight: 600; }
+      .route .unlisted .values { font-weight: 400; color: var(--muted); }
+      .route .unlisted::before { border-style: dotted; }
+
+      footer {
+        max-width: 76rem;
+        margin: 0 auto;
+        padding: 0 1rem 3rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="Site">
+      <a class="home" href={`${base}/`}>The AI Atlas</a>
+      <a href={`${base}/`} aria-current={page === "stacks" ? "page" : undefined}>Proven stacks</a>
+      <a href={`${base}/build/`} aria-current={page === "build" ? "page" : undefined}>Build your own</a>
+    </nav>
+    <slot />
+    <footer>
+      <p>Missing a stack or a part? <a href="https://github.com/tupe12334/the-ai-atlas">Add it on GitHub</a>.</p>
+    </footer>
+  </body>
+</html>

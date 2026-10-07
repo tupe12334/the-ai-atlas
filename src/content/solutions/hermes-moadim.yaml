@@ -2,6 +2,6 @@ name: Hermes + Moadim on your own machine
 summary: Run Hermes Agent locally and fire scheduled agent routines with Moadim crons.
 url: https://moadim.io
 runtime: [on-prem]
-agent: [Hermes]
-scheduler: [Moadim]
-models: [Any OpenAI-compatible, Local models]
+agent: [hermes]
+scheduler: [moadim]
+models: [any-openai-compatible, local-models]

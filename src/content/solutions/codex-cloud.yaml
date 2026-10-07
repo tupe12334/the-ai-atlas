@@ -2,5 +2,5 @@ name: Codex cloud tasks
 summary: Hand coding tasks to OpenAI Codex agents running in cloud sandboxes.
 url: https://openai.com/codex
 runtime: [cloud]
-agent: [Codex]
-models: [OpenAI]
+agent: [codex]
+models: [openai]

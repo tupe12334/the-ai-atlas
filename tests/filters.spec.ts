@@ -5,7 +5,7 @@ const visible = (page: import("@playwright/test").Page) =>
   page.locator("#results > li:visible h2");
 
 test("filters AND across facets, OR within a facet, and round-trip the URL", async ({ page }) => {
-  await page.goto("./?runtime=on-prem&scheduler=Moadim");
+  await page.goto("./?runtime=on-prem&scheduler=moadim");
   await expect(visible(page)).toHaveText([
     "Claude Code + Moadim on your own machine",
     "Hermes + Moadim on your own machine",
@@ -18,8 +18,8 @@ test("filters AND across facets, OR within a facet, and round-trip the URL", asy
   await expect(visible(page)).toHaveText(["Claude Code routines in the cloud"]);
   await expect(page.locator("#count")).toHaveText(/^1 of \d+ stacks$/);
   expect(new URL(page.url()).searchParams.getAll("scheduler").sort()).toEqual([
-    "Claude routines",
-    "Moadim",
+    "claude-routines",
+    "moadim",
   ]);
 });
 
@@ -30,7 +30,7 @@ test("fits a phone screen without horizontal scroll", async ({ page }) => {
 });
 
 test("shows an empty state and clears filters", async ({ page }) => {
-  await page.goto("./?runtime=on-prem&agent=Codex");
+  await page.goto("./?runtime=on-prem&agent=codex");
   await expect(visible(page)).toHaveCount(0);
   await expect(page.locator("#empty")).toBeVisible();
 
@@ -43,7 +43,7 @@ test("shows an empty state and clears filters", async ({ page }) => {
 for (const colorScheme of ["light", "dark"] as const) {
   test(`has no WCAG AA violations in ${colorScheme} mode, with filters selected`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
-    await page.goto("./?runtime=on-prem&runtime=cloud&agent=Hermes&scheduler=Moadim&models=Claude");
+    await page.goto("./?runtime=on-prem&runtime=cloud&agent=hermes&scheduler=moadim&models=claude");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`)).toEqual([]);
   });
@@ -74,7 +74,7 @@ test("hides options that would lead to no stacks", async ({ page }) => {
 });
 
 test("keeps a checked option visible even when nothing else matches", async ({ page }) => {
-  await page.goto("./?runtime=on-prem&scheduler=GitHub+Actions+cron");
+  await page.goto("./?runtime=on-prem&scheduler=github-actions-cron");
   await expect(page.locator("#empty")).toBeVisible();
   await expect(page.getByLabel("GitHub Actions cron")).toBeChecked();
   await expect(page.locator("label.option", { hasText: "GitHub Actions cron" })).toBeVisible();

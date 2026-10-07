@@ -1,16 +1,13 @@
 ---
-import "@fontsource-variable/archivo/standard.css";
-import { getCollection } from "astro:content";
 import { facets } from "../content.config";
+import Base from "../layouts/Base.astro";
+import { base, layers as facetKeys, parts, solutions } from "../catalog";
+import { stackBuild } from "../builds";
 
-const solutions = (await getCollection("solutions")).sort((a, b) =>
-  a.data.name.localeCompare(b.data.name),
-);
-const facetKeys = Object.keys(facets) as (keyof typeof facets)[];
 const options = Object.fromEntries(
   facetKeys.map((key) => [
     key,
-    [...new Set(solutions.flatMap((s) => s.data[key]))].sort(),
+    [...new Set(solutions.flatMap((s) => s.stack[key]))].sort((a, b) => parts[a].name.localeCompare(parts[b].name)),
   ]),
 );
 
@@ -27,56 +24,8 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
 });
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The AI Atlas</title>
-    <meta name="description" content="A catalog of AI development stacks. Filter by runtime, agent, workflow tool, scheduler and models." />
-    <style is:global>
-      :root {
-        --paper: #edf1ee;
-        --sheet: #f8faf8;
-        --ink: #13233f;
-        --muted: #536176;
-        --rule: #c9d3cf;
-        --runtime: #276b4e;
-        --agent: #2f5bd3;
-        --workflow: #b3245c;
-        --scheduler: #8a5d00;
-        --models: #7c3fd8;
-        --contour: #13233f;
-        --edge: #13233f;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --paper: #101b2e;
-          --sheet: #16243b;
-          --ink: #e6ece8;
-          --muted: #9aa8bb;
-          --rule: #2a3a55;
-          --runtime: #5cc597;
-          --agent: #7d9cff;
-          --workflow: #ff7aa8;
-          --scheduler: #f0b440;
-          --models: #b48cff;
-          --contour: #e6ece8;
-          --edge: #3b4f70;
-        }
-      }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        background: var(--paper);
-        color: var(--ink);
-        font-family: "Archivo Variable", system-ui, sans-serif;
-        font-size: 1rem;
-        line-height: 1.55;
-      }
-      a { color: inherit; }
-      :focus-visible { outline: 3px solid var(--agent); outline-offset: 2px; }
-    </style>
-    <style>
+<Base title="The AI Atlas" description="A catalog of proven AI development stacks, and a builder to design your own piece by piece." page="stacks">
+  <style>
       .hero {
         position: relative;
         overflow: hidden;
@@ -181,16 +130,6 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         border-bottom: 1.5px solid var(--rule);
       }
       #count { font-weight: 700; font-stretch: 112%; }
-      button {
-        font: inherit;
-        color: var(--ink);
-        background: none;
-        border: 0;
-        padding: 0;
-        text-decoration: underline;
-        text-underline-offset: 3px;
-        cursor: pointer;
-      }
       #empty { margin: 2rem 0; font-size: 1.1rem; color: var(--muted); }
 
       ul#results {
@@ -219,68 +158,18 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       .stack h2 a { text-decoration: none; }
       .stack h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
       .stack p { margin: 0.5rem 0 1.25rem; color: var(--muted); }
+      .customize { margin-top: 1rem; font-weight: 700; font-size: 0.95rem; }
+      .cta { display: inline-block; margin-top: 1.5rem; font-weight: 800; font-stretch: 112%; font-size: 1.1rem; }
 
-      /* The route: one stop per layer, joined by a line, like a transit map. */
-      .route { list-style: none; margin: auto 0 0; padding: 0; }
-      .route li {
-        position: relative;
-        display: grid;
-        grid-template-columns: 5.5rem 1fr;
-        gap: 0.5rem;
-        padding: 0 0 0.6rem 1.5rem;
-        font-size: 0.9rem;
-      }
-      .route li::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0.3rem;
-        width: 0.75rem;
-        height: 0.75rem;
-        border-radius: 50%;
-        background: var(--sheet);
-        border: 3px solid var(--layer);
-        z-index: 1;
-      }
-      .route li:not(:last-child)::after {
-        content: "";
-        position: absolute;
-        left: 0.32rem;
-        top: 0.9rem;
-        bottom: -0.3rem;
-        width: 3px;
-        background: linear-gradient(var(--layer), var(--next-layer, var(--rule)));
-      }
-      .route li:last-child { padding-bottom: 0; }
-      .route .layer { color: var(--muted); }
-      .route .values { font-weight: 600; }
-      .route .unlisted .values { font-weight: 400; color: var(--muted); }
-      .route .unlisted::before { border-style: dotted; }
-
-      [hidden] { display: none !important; }
-      .runtime { --layer: var(--runtime); }
-      .agent { --layer: var(--agent); }
-      .workflow { --layer: var(--workflow); }
-      .scheduler { --layer: var(--scheduler); }
-      .models { --layer: var(--models); }
-
-      footer {
-        max-width: 76rem;
-        margin: 0 auto;
-        padding: 0 1rem 3rem;
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-    </style>
-  </head>
-  <body>
+  </style>
     <header class="hero">
       <svg viewBox="0 0 1200 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
         {contours.map((d) => <path d={d} fill="none" stroke="currentColor" stroke-width="1.2" />)}
       </svg>
       <div class="hero-inner">
         <h1>The AI<br />Atlas</h1>
-        <p class="lead">Find an AI development stack that fits how you work. Choose where it runs, which agent drives it, which workflow tool wires it up and what keeps it on schedule.</p>
+        <p class="lead">Find an AI development stack that people already run. Choose where it runs, which agent drives it, which workflow tool wires it up and what keeps it on schedule.</p>
+        <a class="cta" href={`${base}/build/`}>Or build your own, piece by piece</a>
       </div>
     </header>
     <main class="layout">
@@ -292,7 +181,7 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
             <legend>{facets[key]}</legend>
             <div class="options">
               {options[key].map((value) => (
-                <label class="option"><input type="checkbox" name={key} value={value} />{value}</label>
+                <label class="option"><input type="checkbox" name={key} value={value} />{parts[value].name}</label>
               ))}
             </div>
           </fieldset>
@@ -306,26 +195,24 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
         </div>
         <p id="empty" hidden>No stack matches all these filters. Clear a filter to see more.</p>
         <ul id="results">
-          {solutions.map(({ data }) => (
-            <li class="stack" data-facets={JSON.stringify(Object.fromEntries(facetKeys.map((k) => [k, data[k]])))}>
+          {solutions.map((data) => (
+            <li class="stack" data-facets={JSON.stringify(data.stack)}>
               <h2><a href={data.url}>{data.name}</a></h2>
               <p>{data.summary}</p>
               <ul class="route" aria-label="Stack layers">
                 {facetKeys.map((k, i) => (
                   <li class:list={[k, { unlisted: data[k].length === 0 }]} style={facetKeys[i + 1] && `--next-layer: var(--${facetKeys[i + 1]})`}>
                     <span class="layer">{facets[k]}</span>
-                    <span class="values">{data[k].join(", ") || "Not listed"}</span>
+                    <span class="values">{data[k].map((id) => parts[id].name).join(", ") || "Not listed"}</span>
                   </li>
                 ))}
               </ul>
+              <a class="customize" href={`${base}/build/?${new URLSearchParams(stackBuild(data.stack))}`}>Customize this build</a>
             </li>
           ))}
         </ul>
       </section>
     </main>
-    <footer>
-      <p>Missing a stack? <a href="https://github.com/tupe12334/the-ai-atlas">Add it on GitHub</a>.</p>
-    </footer>
     <script>
       // Within a facet, any checked value matches (OR). Across facets, all must match (AND).
       const form = document.querySelector<HTMLFormElement>("#filters")!;
@@ -391,5 +278,4 @@ const contours = Array.from({ length: 14 }, (_, ring) => {
       form.addEventListener("reset", () => setTimeout(apply));
       apply();
     </script>
-  </body>
-</html>
+</Base>
