@@ -1,0 +1,6 @@
+name: Activepieces AI agents
+summary: Open-source workflow automation with AI agent steps and MCP servers. Self-host it or use the cloud version.
+url: https://github.com/activepieces/activepieces
+runtime: [on-prem, cloud]
+agent: [Activepieces agents]
+workflow: [Activepieces]

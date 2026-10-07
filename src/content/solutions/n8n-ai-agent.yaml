@@ -1,0 +1,8 @@
+name: n8n AI agent workflows
+summary: Build agent steps into n8n workflows with its AI Agent node. Self-host it or use n8n Cloud.
+url: https://docs.n8n.io/build/integrate-ai
+runtime: [on-prem, cloud]
+agent: [n8n AI Agent]
+workflow: [n8n]
+scheduler: [n8n Schedule Trigger]
+models: [Claude, OpenAI, Local models]

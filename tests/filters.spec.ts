@@ -79,3 +79,15 @@ test("keeps a checked option visible even when nothing else matches", async ({ p
   await expect(page.getByLabel("GitHub Actions cron")).toBeChecked();
   await expect(page.locator("label.option", { hasText: "GitHub Actions cron" })).toBeVisible();
 });
+
+test("filters by workflow tool", async ({ page }) => {
+  await page.goto("./");
+  await page.getByLabel("GitHub Actions", { exact: true }).check();
+  await expect(visible(page)).toHaveText(["Claude Code in GitHub Actions", "Codex in GitHub Actions"]);
+
+  await page.getByLabel("GitHub Actions", { exact: true }).uncheck();
+  await page.getByLabel("on-prem").check();
+  // Zapier only runs in the cloud, so it can't lead to an on-prem stack.
+  await expect(page.locator("label.option", { hasText: /^Zapier$/ })).toBeHidden();
+  await expect(page.locator("label.option", { hasText: /^n8n$/ })).toBeVisible();
+});

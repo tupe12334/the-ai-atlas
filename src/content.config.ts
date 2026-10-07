@@ -6,6 +6,7 @@ import { z } from "astro/zod";
 export const facets = {
   runtime: "Runtime",
   agent: "Agent",
+  workflow: "Workflow",
   scheduler: "Scheduler",
   models: "Models",
 } as const;
@@ -21,6 +22,7 @@ const solutions = defineCollection({
     url: z.url({ protocol: /^https$/ }),
     runtime: z.array(z.enum(["on-prem", "cloud"])).min(1),
     agent: z.array(facetValue).min(1),
+    workflow: z.array(facetValue).default([]),
     scheduler: z.array(facetValue).default([]),
     models: z.array(facetValue).default([]),
   }),

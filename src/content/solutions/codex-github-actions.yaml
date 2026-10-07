@@ -1,0 +1,8 @@
+name: Codex in GitHub Actions
+summary: Run the Codex CLI from GitHub workflows with the official action, on events such as pull requests or on a cron schedule.
+url: https://github.com/openai/codex-action
+runtime: [cloud]
+agent: [Codex]
+workflow: [GitHub Actions]
+scheduler: [GitHub Actions cron]
+models: [OpenAI]
