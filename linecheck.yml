@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tupe12334/linecheck/main/schema/linecheck.schema.json
+
+# Per-file line limits, enforced in CI by the `linecheck` job.
+# First matching rule wins.
+rules:
+  # Astro pages: error ceiling starts at 600 because src/pages/build.astro is 593 lines.
+  # Ratchet to 400 once it is split into components.
+  - pattern: "**/*.astro"
+    warn: 200
+    warn_message: "Getting long — consider extracting components"
+    error: 600
+    error_message: "Too large to review easily; split into components"
+  - pattern: "**/*.{ts,mjs,js}"
+    warn: 200
+    error: 400
+    error_message: "Too large to review easily; split by responsibility"
+  # Content data (catalog entries, parts list) is allowed to be longer than code.
+  - pattern: "**/*.yaml"
+    warn: 600
+    error: 1000
+
+exclude:
+  - "pnpm-lock.yaml"
+  - "node_modules/**"
+  - "dist/**"
+  - ".astro/**"
+  - "test-results/**"
+  - "playwright-report/**"
