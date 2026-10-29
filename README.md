@@ -24,3 +24,7 @@ pnpm test   # build, type-check and browser tests
 ## Deploy
 
 Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it tests the site, then deploys it to GitHub Pages at https://tupe12334.github.io/the-ai-atlas/.
+
+## Related projects
+
+- [moadim](https://moadim.io/) — loop engineering: build, schedule & run agent loops.
